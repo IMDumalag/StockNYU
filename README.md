@@ -7,7 +7,7 @@ This will be our official repository for all codes and tasks related to our onli
 
 ### Web App Setup
 3. Put repository in the htdocs of xampp
-4. Open new terminal in that folder and execute
+4. Go to the repository and then open new terminal in there and execute
 ```javascript
 composer require google/apiclient:^2.0
 ```
