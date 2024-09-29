@@ -2,14 +2,21 @@
 
 This will be our official repository for all codes and tasks related to our online inventory management system.
 
+### Needed to install before Web App Setup
+1. PHP
+
 ### Web App Setup
-1. Put repository in the htdocs of xampp
-2. Open the cloned repository from the xampp folder
-3. Open terminal and run:
+3. Put repository in the htdocs of xampp
+4. Open new terminal in that folder and execute
+```javascript
+composer require google/apiclient:^2.0
+```
+4. Open the cloned repository from the xampp folder
+5. Open terminal and run:
 ```javascript
 npm install
 ```
-4. To finally run the app, open terminal in powershell  
+6. To finally run the app, open terminal in powershell  
 ```javascript
 npm run dev
 ```
