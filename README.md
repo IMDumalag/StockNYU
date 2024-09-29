@@ -18,15 +18,12 @@ npm run dev
 ```javascript
 npm install
 npm install bootsrap
+npm install reaact-bootsrap
 npm install react-router-dom
 npm install @mui/material @emotion/react @emotion/styled
 npm install @mui/material @mui/styled-engine-sc styled-components
 npm install @fontsource/roboto
 npm install axios
-npm install --save
-npm install @fullcalendar/core 
-npm install @fullcalendar/react
-npm install @fullcalendar/daygrid
 ```
 
 ### Tutorials
