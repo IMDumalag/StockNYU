@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -17,21 +18,17 @@ if ($requestMethod == "OPTIONS") {
 if ($requestMethod == "POST") {
     $inputData = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($inputData['email']) && isset($inputData['password'])) {
-        $userInput = [
-            'email' => $inputData['email'],
-            'password' => $inputData['password']
-        ];
-        $loginUser = loginUser($userInput);
-        echo $loginUser;
-    } else {
+    if (empty($inputData)) {
         $data = [
-            'status' => 422,
-            'message' => 'Email and Password are required'
+            'status' => 400,
+            'message' => 'No data provided',
         ];
-        header("HTTP/1.1 422 Unprocessable Entity");
+        header("HTTP/1.1 400 Bad Request");
         echo json_encode($data);
+        exit();
     }
+
+    loginUser($inputData);
 } else {
     $data = [
         'status' => 405,
@@ -40,4 +37,5 @@ if ($requestMethod == "POST") {
     header("HTTP/1.1 405 Method Not Allowed");
     echo json_encode($data);
 }
+
 ?>

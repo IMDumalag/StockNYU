@@ -1,5 +1,10 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With");
+
 require ('../inc/dbcon.php');
 
 // errors
@@ -53,9 +58,9 @@ function registerUser($userInput) {
         return error422('Enter Address');
     } else {
         // Hash the password before storing it
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $query = "INSERT INTO tbl_users (user_id, nu_given_identifier, f_name, m_name, l_name, email, password, access_id, date_of_birth, gender, address, profile_picture, created_at) VALUES ('$user_id', '$nu_given_identifier', '$f_name', '$m_name', '$l_name', '$email', '$hashed_password', '$access_id', '$date_of_birth', '$gender', '$address', '$profile_picture', '$created_at')";
+        $query = "INSERT INTO tbl_users (user_id, nu_given_identifier, f_name, m_name, l_name, email, password, access_id, date_of_birth, gender, address, profile_picture, created_at) VALUES ('$user_id', '$nu_given_identifier', '$f_name', '$m_name', '$l_name', '$email', '$password', '$access_id', '$date_of_birth', '$gender', '$address', '$profile_picture', '$created_at')";
         $result = mysqli_query($conn, $query);
 
         if ($result) {
@@ -248,50 +253,47 @@ function updateUser($userInput, $userParameters) {
     }
 }
 
-function loginUser($userInput) {
+// Login function
+function loginUser($userInput)
+{
     global $conn;
 
     $email = mysqli_real_escape_string($conn, $userInput['email']);
     $password = mysqli_real_escape_string($conn, $userInput['password']);
+    $access_id = mysqli_real_escape_string($conn, $userInput['access_id']);
 
     if (empty(trim($email))) {
         return error422('Enter Email');
     } else if (empty(trim($password))) {
         return error422('Enter Password');
+    } else if (empty(trim($access_id))) {
+        return error422('Enter Access ID');
     } else {
-        $query = "SELECT * FROM tbl_users WHERE email = '$email' LIMIT 1";
-        $result = $conn->query($query);
+        // Check user existence
+        $query = "SELECT * FROM tbl_users WHERE email = '$email' AND access_id = '$access_id' LIMIT 1";
+        $result = mysqli_query($conn, $query);
 
-        if ($result) {
-            if ($result->num_rows == 1) {
-                $user = $result->fetch_assoc();
-                if (password_verify($password, $user['password'])) {
-                    $data = [
-                        'status' => 200,
-                        'message' => 'Login Successful!',
-                        'data' => [
-                            'user_id' => $user['user_id'],
-                            'email' => $user['email'],
-                            'first_name' => $user['f_name'],
-                            'last_name' => $user['l_name'],
-                            'role' => $user['role']
-                        ]
-                    ];
-                    header("HTTP/1.1 200 OK");
-                    return json_encode($data);
-                } else {
-                    return error422('Invalid Password');
-                }
+        if ($result && mysqli_num_rows($result) == 1) {
+            $user = mysqli_fetch_assoc($result);
+
+            // Verify password
+            if ($password === $user['password']) {
+                $data = [
+                    'status' => 200,
+                    'message' => 'Login Successful',
+                    'user' => [
+                        'user_id' => $user['user_id'],
+                        'email' => $user['email'],
+                        'access_id' => $user['access_id']
+                    ]
+                ];
+                header("HTTP/1.1 200 OK");
+                echo json_encode($data);
             } else {
-                return error422('No User Found with this Email');
+                return error422('Invalid Password');
             }
         } else {
-            $data = [
-                'status' => 500,
-                'message' => 'Internal Server Error: ' . $conn->error,
-            ];
-            header("HTTP/1.1 500 Internal Server Error");
-            return json_encode($data);
+            return error422('User Not Found');
         }
     }
 }
