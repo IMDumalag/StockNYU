@@ -4,6 +4,7 @@ class GlobalVariable {
     this.userData = {};  // Object to store user data
   }
 
+  
   // Methods for managing user data
   setUserData(userData) {
     console.log('Setting User Data:', userData); // Debugging line
