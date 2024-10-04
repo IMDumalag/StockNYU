@@ -1,7 +1,10 @@
+// Login.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import globalVariable from '../backend/data/GlobalVariable';  // Import the global variable
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -32,7 +35,14 @@ function Login() {
         }
       });
 
+      console.log('Response:', response.data); // Debugging line
+
       if (response.data.status === 200) {
+        // Set the user data globally
+        globalVariable.setUserData(response.data.user); // Assuming `user` contains user details
+
+        console.log('User Data Set:', globalVariable.getUserData()); // Debugging line
+
         if (formData.access_id === '1') {
           navigate('/login/user_dashboard');
         } else if (formData.access_id === '2') {
@@ -42,6 +52,7 @@ function Login() {
         setError(response.data.message || 'Login failed');
       }
     } catch (error) {
+      console.error('Error:', error); // Debugging line
       setError('An error occurred. Please try again.');
     }
   };

@@ -284,7 +284,9 @@ function loginUser($userInput)
                     'user' => [
                         'user_id' => $user['user_id'],
                         'email' => $user['email'],
-                        'access_id' => $user['access_id']
+                        'access_id' => $user['access_id'],
+                        'f_name' => $user['f_name'],
+                        'l_name' => $user['l_name']
                     ]
                 ];
                 header("HTTP/1.1 200 OK");

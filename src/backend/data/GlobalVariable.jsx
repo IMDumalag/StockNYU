@@ -1,19 +1,30 @@
 class GlobalVariable {
   constructor() {
     this.listeners = [];
-    this.userData = {};  // Object to store user data
+    this.userData = this.loadUserData(); // Load from localStorage when initialized
   }
 
-  
   // Methods for managing user data
   setUserData(userData) {
     console.log('Setting User Data:', userData); // Debugging line
     this.userData = userData;
+    this.saveUserData(); // Save to localStorage whenever the data is updated
     this.notifyListeners();
   }
 
   getUserData() {
     return this.userData;
+  }
+
+  // Load user data from localStorage
+  loadUserData() {
+    const data = localStorage.getItem('userData');
+    return data ? JSON.parse(data) : {};  // Return parsed data or an empty object if not found
+  }
+
+  // Save user data to localStorage
+  saveUserData() {
+    localStorage.setItem('userData', JSON.stringify(this.userData));
   }
 
   subscribe(listener) {

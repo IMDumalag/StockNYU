@@ -11,6 +11,7 @@ import Register from './frontend/Register';
 import Login from './frontend/Login';
 import UserDashboard from './frontend/user/UserDashboard';
 import StaffDashboard from './frontend/staff/StaffDashboard';
+import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 
 function App() {
   return (
@@ -20,7 +21,12 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register onCreate={() => window.location.reload()} />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Routes for User */}
           <Route path="/login/user_dashboard" element={<UserDashboard />} />
+          <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
+
+          {/* Routes Staff */}
           <Route path="/login/staff_dashboard" element={<StaffDashboard />} />
 
           {/* Route for BasicCRUD */}

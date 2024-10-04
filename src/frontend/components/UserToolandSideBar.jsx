@@ -1,10 +1,10 @@
-// UserDashboard.js
+// UserToolandSideBar.jsx
 
 import React, { useEffect, useState } from 'react';
-import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
 import 'bootstrap/dist/css/bootstrap.min.css';
+import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
 
-const UserDashboard = () => {
+const UserToolandSideBar = ({ children }) => {
    const [userData, setUserData] = useState(globalVariable.getUserData());
 
    useEffect(() => {
@@ -23,7 +23,9 @@ const UserDashboard = () => {
       <div className="d-flex" id="wrapper">
          {/* Sidebar */}
          <div className="bg-light border-right" id="sidebar-wrapper">
-            <div className="sidebar-heading">Dashboard</div>
+            <div className="sidebar-heading">
+            <a href="/login/user_dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</a>
+            </div>
             <div className="list-group list-group-flush">
                <a href="/login/user_viewstockinventory" className="list-group-item list-group-item-action bg-light">Stock Inventory</a>
                <a href="#" className="list-group-item list-group-item-action bg-light">Stock Reservation</a>
@@ -35,8 +37,6 @@ const UserDashboard = () => {
          {/* Page Content */}
          <div id="page-content-wrapper">
             <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-               
-
                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span className="navbar-toggler-icon"></span>
                </button>
@@ -53,10 +53,9 @@ const UserDashboard = () => {
                </div>
             </nav>
 
-            <div className="container-fluid mt-4">
-               <h1 className="text-center">Welcome {userData.f_name} {userData.l_name}</h1>
+            <div className="container-fluid mt-4 d-flex justify-content-center">
                <div>
-                  {/* Additional dashboard content can go here */}
+                  {children}
                </div>
             </div>
          </div>
@@ -65,4 +64,4 @@ const UserDashboard = () => {
    );
 };
 
-export default UserDashboard;
+export default UserToolandSideBar;
