@@ -33,6 +33,9 @@ function BasicCRUD() {
             <li className="nav-item">
               <Link className="nav-link" to="/basic_crud/delete_user">Deletes User</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/basic_crud/inventory_items_crud">Inventory Items</Link>
+            </li>
           </ul>
         </div>
       </nav>

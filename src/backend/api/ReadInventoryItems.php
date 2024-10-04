@@ -16,8 +16,8 @@ if ($requestMethod == "OPTIONS") {
 }
 
 if ($requestMethod == "GET") {
-        $getImageList = getImageList();
-        echo $getImageList;
+        $getInventoryItems = getInventoryItems();
+        echo $getInventoryItems;
     
 } else {
     $data = [

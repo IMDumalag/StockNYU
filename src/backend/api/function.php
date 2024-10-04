@@ -1,7 +1,6 @@
 <?php
 
 require ('../inc/dbcon.php');
-require ('../inc/dbcon2.php');
 
 // errors
 function error422($message) {
@@ -16,74 +15,65 @@ function error422($message) {
 
 // users Table
 function registerUser($userInput) {
-   global $conn;
+    global $conn;
 
-   $user_id = mysqli_real_escape_string($conn, $userInput['user_id']);
-   $nu_given_identifier = mysqli_real_escape_string($conn, $userInput['nu_given_identifier']);
-   $f_name = mysqli_real_escape_string($conn, $userInput['f_name']);
-   $m_name = mysqli_real_escape_string($conn, $userInput['m_name']);
-   $l_name = mysqli_real_escape_string($conn, $userInput['l_name']);
-   $email = mysqli_real_escape_string($conn, $userInput['email']);
-   $password = mysqli_real_escape_string($conn, $userInput['password']);
-   $access_id = mysqli_real_escape_string($conn, $userInput['access_id']);
-   $date_of_birth = mysqli_real_escape_string($conn, $userInput['date_of_birth']);
-   $gender = mysqli_real_escape_string($conn, $userInput['gender']);
-   $address = mysqli_real_escape_string($conn, $userInput['address']);
-   $profile_picture = mysqli_real_escape_string($conn, $userInput['profile_picture']);
-   $created_at = mysqli_real_escape_string($conn, $userInput['created_at']);
+    $user_id = mysqli_real_escape_string($conn, $userInput['user_id']);
+    $nu_given_identifier = mysqli_real_escape_string($conn, $userInput['nu_given_identifier']);
+    $f_name = mysqli_real_escape_string($conn, $userInput['f_name']);
+    $m_name = mysqli_real_escape_string($conn, $userInput['m_name']);
+    $l_name = mysqli_real_escape_string($conn, $userInput['l_name']);
+    $email = mysqli_real_escape_string($conn, $userInput['email']);
+    $password = mysqli_real_escape_string($conn, $userInput['password']);
+    $access_id = mysqli_real_escape_string($conn, $userInput['access_id']);
+    $date_of_birth = mysqli_real_escape_string($conn, $userInput['date_of_birth']);
+    $gender = mysqli_real_escape_string($conn, $userInput['gender']);
+    $address = mysqli_real_escape_string($conn, $userInput['address']);
+    $profile_picture = mysqli_real_escape_string($conn, $userInput['profile_picture']);
+    $created_at = mysqli_real_escape_string($conn, $userInput['created_at']);
 
-   if (empty(trim($user_id))) {
-       return error422('Enter User ID');
-   }
-   else if (empty(trim($nu_given_identifier))) {
-       return error422('Enter NU Given Identifier');
-   }
-   else if (empty(trim($f_name))) {
-       return error422('Enter First Name');
-   }
-   else if (empty(trim($l_name))) {
-       return error422('Enter Last Name');
-   }
-   else if (empty(trim($email))) {
-       return error422('Enter Email');
-   }
-   else if (empty(trim($password))) {
-       return error422('Enter Password');
-   }
-   else if (empty(trim($access_id))) {
-       return error422('Enter Access ID');
-   }
-   else if (empty(trim($date_of_birth))) {
-       return error422('Enter Date of Birth');
-   }
-   else if (empty(trim($gender))) {
-       return error422('Enter Gender');
-   }
-   else if (empty(trim($address))) {
-       return error422('Enter Address');
-   }
-   else
-   {
-       $query = "INSERT INTO tbl_users (user_id, nu_given_identifier, f_name, m_name, l_name, email, password, access_id, date_of_birth, gender, address, profile_picture, created_at) VALUES ('$user_id', '$nu_given_identifier', '$f_name', '$m_name', '$l_name', '$email', '$password', '$access_id', '$date_of_birth', '$gender', '$address', '$profile_picture', '$created_at')";
-       $result = mysqli_query($conn, $query);
+    if (empty(trim($user_id))) {
+        return error422('Enter User ID');
+    } else if (empty(trim($nu_given_identifier))) {
+        return error422('Enter NU Given Identifier');
+    } else if (empty(trim($f_name))) {
+        return error422('Enter First Name');
+    } else if (empty(trim($l_name))) {
+        return error422('Enter Last Name');
+    } else if (empty(trim($email))) {
+        return error422('Enter Email');
+    } else if (empty(trim($password))) {
+        return error422('Enter Password');
+    } else if (empty(trim($access_id))) {
+        return error422('Enter Access ID');
+    } else if (empty(trim($date_of_birth))) {
+        return error422('Enter Date of Birth');
+    } else if (empty(trim($gender))) {
+        return error422('Enter Gender');
+    } else if (empty(trim($address))) {
+        return error422('Enter Address');
+    } else {
+        // Hash the password before storing it
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-       if($result){
-           $data = [
-               'status' => 201,
-               'message' => 'User Created Successfully!',
-           ];
-           header("HTTP/1.1 201 Created");
-           return json_encode($data);
-       }
-       else{
-           $data = [
-               'status' => 500,
-               'message' => 'Internal Server Error: ' . $conn->error,
-           ];
-           header("HTTP/1.1 500 Internal Server Error");
-           return json_encode($data);
-       }
-   }
+        $query = "INSERT INTO tbl_users (user_id, nu_given_identifier, f_name, m_name, l_name, email, password, access_id, date_of_birth, gender, address, profile_picture, created_at) VALUES ('$user_id', '$nu_given_identifier', '$f_name', '$m_name', '$l_name', '$email', '$hashed_password', '$access_id', '$date_of_birth', '$gender', '$address', '$profile_picture', '$created_at')";
+        $result = mysqli_query($conn, $query);
+
+        if ($result) {
+            $data = [
+                'status' => 201,
+                'message' => 'User Created Successfully!',
+            ];
+            header("HTTP/1.1 201 Created");
+            return json_encode($data);
+        } else {
+            $data = [
+                'status' => 500,
+                'message' => 'Internal Server Error: ' . $conn->error,
+            ];
+            header("HTTP/1.1 500 Internal Server Error");
+            return json_encode($data);
+        }
+    }
 }
 
 function getUserList() {
@@ -261,18 +251,15 @@ function updateUser($userInput, $userParameters) {
 function loginUser($userInput) {
     global $conn;
 
-    $user_id = mysqli_real_escape_string($conn, $userInput['user_id']);
     $email = mysqli_real_escape_string($conn, $userInput['email']);
     $password = mysqli_real_escape_string($conn, $userInput['password']);
 
-    if (empty(trim($user_id))) {
-        return error422('Enter User ID');
-    } else if (empty(trim($email))) {
+    if (empty(trim($email))) {
         return error422('Enter Email');
     } else if (empty(trim($password))) {
         return error422('Enter Password');
     } else {
-        $query = "SELECT * FROM tbl_users WHERE user_id = '$user_id' AND email = '$email' LIMIT 1";
+        $query = "SELECT * FROM tbl_users WHERE email = '$email' LIMIT 1";
         $result = $conn->query($query);
 
         if ($result) {
@@ -282,7 +269,13 @@ function loginUser($userInput) {
                     $data = [
                         'status' => 200,
                         'message' => 'Login Successful!',
-                        'data' => $user
+                        'data' => [
+                            'user_id' => $user['user_id'],
+                            'email' => $user['email'],
+                            'first_name' => $user['f_name'],
+                            'last_name' => $user['l_name'],
+                            'role' => $user['role']
+                        ]
                     ];
                     header("HTTP/1.1 200 OK");
                     return json_encode($data);
@@ -290,7 +283,7 @@ function loginUser($userInput) {
                     return error422('Invalid Password');
                 }
             } else {
-                return error422('No User Found with this User ID and Email');
+                return error422('No User Found with this Email');
             }
         } else {
             $data = [

@@ -17,9 +17,8 @@ if ($requestMethod == "OPTIONS") {
 if ($requestMethod == "POST") {
     $inputData = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($inputData['user_id']) && isset($inputData['email']) && isset($inputData['password'])) {
+    if (isset($inputData['email']) && isset($inputData['password'])) {
         $userInput = [
-            'user_id' => $inputData['user_id'],
             'email' => $inputData['email'],
             'password' => $inputData['password']
         ];
@@ -28,7 +27,7 @@ if ($requestMethod == "POST") {
     } else {
         $data = [
             'status' => 422,
-            'message' => 'User ID, Email, and Password are required'
+            'message' => 'Email and Password are required'
         ];
         header("HTTP/1.1 422 Unprocessable Entity");
         echo json_encode($data);
@@ -41,5 +40,4 @@ if ($requestMethod == "POST") {
     header("HTTP/1.1 405 Method Not Allowed");
     echo json_encode($data);
 }
-
 ?>
