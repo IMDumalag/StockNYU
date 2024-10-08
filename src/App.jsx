@@ -13,6 +13,7 @@ import UserDashboard from './frontend/user/UserDashboard';
 import StaffDashboard from './frontend/staff/StaffDashboard';
 import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 import UserReservation from './frontend/user/UserReservation';
+import UserFAQs from './frontend/user/UserFAQs';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/login/user_dashboard" element={<UserDashboard />} />
           <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
           <Route path="/login/user_reservation" element={<UserReservation />} />
+          <Route path="/login/user_faqs" element={<UserFAQs />} />
 
           {/* Routes Staff */}
           <Route path="/login/staff_dashboard" element={<StaffDashboard />} />

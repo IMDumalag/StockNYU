@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With");
 
-require('functionReservations.php');
+include('functionFaqs.php');
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 
@@ -16,23 +16,7 @@ if ($requestMethod == "OPTIONS") {
 }
 
 if ($requestMethod == "GET") {
-   $latestReservationId = getLatestReservationId();
-
-   if ($latestReservationId !== null) {
-      $data = [
-         'status' => 200,
-         'latest_reservation_id' => $latestReservationId,
-      ];
-      header("HTTP/1.1 200 OK");
-      echo json_encode($data);
-   } else {
-      $data = [
-         'status' => 404,
-         'message' => 'No reservations found',
-      ];
-      header("HTTP/1.1 404 Not Found");
-      echo json_encode($data);
-   }
+   viewAllFaqs();
 } else {
    $data = [
       'status' => 405,

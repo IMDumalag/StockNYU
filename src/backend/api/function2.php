@@ -114,4 +114,24 @@ function deleteInventoryItem($item_id) {
           error422("Error: " . $stmt->error);
      }
 }
+
+function updateInventoryQuantity($item_id, $quantity) {
+     global $conn;
+ 
+     $query = "UPDATE tbl_inventory_items SET quantity = ? WHERE item_id = ?";
+     $stmt = $conn->prepare($query);
+     $stmt->bind_param("is", $quantity, $item_id);
+ 
+     if ($stmt->execute()) {
+         $data = [
+             'status' => 200,
+             'message' => 'Inventory quantity updated successfully!'
+         ];
+         header("HTTP/1.1 200 OK");
+         return json_encode($data);
+     } else {
+         error422("Error: " . $stmt->error);
+     }
+ }
+ 
 ?>

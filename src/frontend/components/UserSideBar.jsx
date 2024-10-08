@@ -12,7 +12,7 @@ const Sidebar = () => {
       <div className="list-group list-group-flush">
         <a href="/login/user_viewstockinventory" className="list-group-item list-group-item-action bg-light">Stock Inventory</a>
         <a href="/login/user_reservation" className="list-group-item list-group-item-action bg-light">Stock Reservation</a>
-        <a href="#" className="list-group-item list-group-item-action bg-light">FAQ</a>
+        <a href="/login/user_faqs" className="list-group-item list-group-item-action bg-light">FAQ</a>
       </div>
     </div>
   );

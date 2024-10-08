@@ -1,7 +1,10 @@
+// GlobalVariable.jsx
+
 class GlobalVariable {
   constructor() {
     this.listeners = [];
     this.userData = this.loadUserData(); // Load from localStorage when initialized
+    this.currentItem = {}; // Initialize current item
   }
 
   // Methods for managing user data
@@ -37,6 +40,16 @@ class GlobalVariable {
 
   notifyListeners() {
     this.listeners.forEach(listener => listener());
+  }
+
+  // Methods for managing current item
+  setCurrentItem(item) {
+    this.currentItem = item;
+    this.notifyListeners();
+  }
+
+  getCurrentItem() {
+    return this.currentItem;
   }
 }
 

@@ -1,32 +1,28 @@
-// UserReservation.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UserSidebar from '../components/UserSidebar';
 import UserToolbar from '../components/UserToolbar';
-import { Modal, Button } from 'react-bootstrap';
+import globalVariable from '/src/backend/data/GlobalVariable'; // Import globalVariable
 
 const UserReservation = () => {
    const [items, setItems] = useState([]);
-   const [currentPage, setCurrentPage] = useState(1);
-   const itemsPerPage = 5;
-   const [showModal, setShowModal] = useState(false);
-   const [reservationDetails, setReservationDetails] = useState({
-      user_id: 'ST2022-170002', // Set this to the logged-in user's ID
-      item_id: '',
-      reservation_date_start: '',
-      reservation_date_end: '',
-      quantity_reserved: 1,
-      total_reservation_price: 0,
-      status: 'Reserved',
-      reservation_id: ''
-   });
-   const [selectedItem, setSelectedItem] = useState(null);
+   const [reservations, setReservations] = useState([]); // State for user reservations
+   const [currentReservationPage, setCurrentReservationPage] = useState(1); // State for reservation pagination
+   const reservationsPerPage = 5; // Items per page for reservations
 
    useEffect(() => {
-      fetchItems();
+      const fetchData = async () => {
+         await fetchItems();
+      };
+      fetchData();
    }, []);
+   
+   useEffect(() => {
+      if (items.length > 0) {
+         fetchUserReservations(); // Fetch user reservations after items are fetched
+      }
+   }, [items]); // Depend on the items array
 
    const fetchItems = async () => {
       try {
@@ -41,124 +37,77 @@ const UserReservation = () => {
       }
    };
 
-   const fetchLatestReservationId = async () => {
+   const fetchUserReservations = async () => {
       try {
-         const response = await axios.get("http://localhost/stock-nyu/src/backend/api/GetLatestReservationId.php");
+         const response = await axios.get(`http://localhost/stock-nyu/src/backend/api/ReadUserReservationsById.php?user_id=${globalVariable.getUserData().user_id}`);
          if (response.data.status === 200) {
-            return response.data.latest_id;
+            const reservationsWithDetails = response.data.reservations
+               .filter(reservation => reservation.status !== 'cancelled') // Filter out cancelled reservations
+               .map(reservation => {
+                  const item = items.find(item => item.item_id === reservation.item_id);
+                  return {
+                     ...reservation,
+                     item_name: item ? item.item_name : 'Unknown',
+                     item_image: item ? item.item_image : ''
+                  };
+               });
+            setReservations(reservationsWithDetails);
          } else {
-            console.error("Error fetching latest reservation ID:", response.data.message);
-            return null;
+            console.error("Error fetching reservations:", response.data.message);
          }
       } catch (error) {
-         console.error("Error fetching latest reservation ID:", error);
-         return null;
+         console.error("Error fetching reservations:", error);
       }
    };
 
-   const generateNewReservationId = async () => {
-      const latestId = await fetchLatestReservationId();
-      const currentYear = new Date().getFullYear();
-      if (!latestId) {
-         return `R${currentYear}-0001`;
-      }
-      const [prefix, year, number] = latestId.match(/(R)(\d{4})-(\d{4})/).slice(1);
-      if (parseInt(year) === currentYear) {
-         const newNumber = String(parseInt(number) + 1).padStart(4, '0');
-         return `R${currentYear}-${newNumber}`;
-      } else {
-         return `R${currentYear}-0001`;
-      }
+   const paginateReservations = (pageNumber) => {
+      setCurrentReservationPage(pageNumber);
    };
 
-   const paginate = (pageNumber) => {
-      setCurrentPage(pageNumber);
-   };
+   const filteredReservations = reservations.filter(reservation => reservation.status !== 'Cancelled');
+   const currentReservations = filteredReservations.slice((currentReservationPage - 1) * reservationsPerPage, currentReservationPage * reservationsPerPage);
 
-   const currentItems = items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-   const handleReserveClick = (item) => {
-      setSelectedItem(item);
-      setReservationDetails({
-         ...reservationDetails,
-         item_id: item.item_id,
-      });
-      setShowModal(true);
-   };
-
-   const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setReservationDetails({ ...reservationDetails, [name]: value });
-   };
-
-   const calculateTotalPrice = () => {
-      const { reservation_date_start, reservation_date_end, quantity_reserved } = reservationDetails;
-      const start = new Date(reservation_date_start);
-      const end = new Date(reservation_date_end);
-      const days = (end - start) / (1000 * 60 * 60 * 24) + 1; // Calculate number of days
-      const total_price = days * selectedItem.reservation_price_perday * quantity_reserved;
-      return total_price;
-   };
-
-   const validateReservation = () => {
-      const { reservation_date_start, reservation_date_end, quantity_reserved } = reservationDetails;
-      if (!reservation_date_start || !reservation_date_end) {
-         alert("Please select both start and end dates.");
-         return false;
-      }
-      const start = new Date(reservation_date_start);
-      const end = new Date(reservation_date_end);
-      if (end < start) {
-         alert("End date cannot be before start date.");
-         return false;
-      }
-      if (quantity_reserved < 1) {
-         alert("Quantity must be at least 1.");
-         return false;
-      }
-      if (quantity_reserved > selectedItem.quantity) {
-         alert(`Only ${selectedItem.quantity} items are available.`);
-         return false;
-      }
-      return true;
-   };
-
-   const handleReserve = async () => {
-      if (!validateReservation()) return;
-
-      const total_reservation_price = calculateTotalPrice();
-      const newReservationId = await generateNewReservationId();
-      const reservationData = {
-         ...reservationDetails,
-         total_reservation_price,
-         reservation_id: newReservationId
-      };
-
-      console.log("Reservation Details:", reservationData); // Log reservation details
-
+   const handleCancelReservation = async (reservation_id) => {
       try {
-         const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateReservation.php", reservationData);
-         if (response.data.status === 201) {
-            alert("Reservation Created Successfully!");
-            fetchItems(); // Refresh items to update quantity
-            setShowModal(false); // Close modal after success
-            // Reset reservation details
-            setReservationDetails({
-               user_id: 'ST2022-170002',
-               item_id: '',
-               reservation_date_start: '',
-               reservation_date_end: '',
-               quantity_reserved: 1,
-               total_reservation_price: 0,
-               status: 'Reserved',
-               reservation_id: ''
-            });
+         const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CancelReservation.php", { reservation_id });
+         if (response.data.status === 200) {
+            alert("Reservation Cancelled Successfully!");
+
+            // Find the canceled reservation
+            const canceledReservation = reservations.find(reservation => reservation.reservation_id === reservation_id);
+            if (canceledReservation) {
+               // Find the corresponding item
+               const item = items.find(item => item.item_id === canceledReservation.item_id);
+               if (item) {
+                  // Update the item's quantity
+                  const updatedQuantity = parseInt(item.quantity) + parseInt(canceledReservation.quantity_reserved);
+                  try {
+                     const updateResponse = await axios.put(
+                        "http://localhost/stock-nyu/src/backend/api/UpdateItemQuantity.php",
+                        {
+                           item_id: item.item_id,
+                           quantity: updatedQuantity, // Increased quantity
+                        }
+                     );
+
+                     if (updateResponse.data.status === 200) {
+                        fetchItems(); // Refresh items to update quantity
+                        fetchUserReservations(); // Refresh user reservations
+                     } else {
+                        alert(updateResponse.data.message || "Failed to update item quantity.");
+                     }
+                  } catch (error) {
+                     console.error("Error updating item quantity:", error);
+                     alert("Failed to update item quantity. Please try again.");
+                  }
+               }
+            }
          } else {
-            alert(response.data.message || "Reservation failed.");
+            alert(response.data.message || "Cancellation failed.");
          }
       } catch (error) {
-         console.error("Error creating reservation:", error);
-         alert("Reservation failed. Please try again.");
+         console.error("Error cancelling reservation:", error);
+         alert("Cancellation failed. Please try again.");
       }
    };
 
@@ -172,127 +121,94 @@ const UserReservation = () => {
                </div>
                <div className="col-md-9">
                   <div className="container mt-5">
-                     <h2 className="mb-4">Reserve an Item</h2>
+                     <h2 className="mt-5 mb-4">Your Reservations</h2>
 
-                     <table className="table table-bordered">
-                        <thead className="thead-dark">
-                           <tr>
-                              <th>Item Name</th>
-                              <th>Image</th>
-                              <th>Description</th>
-                              <th>Quantity Available</th>
-                              <th>Price/Day</th>
-                              <th>Action</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           {currentItems.map(item => (
-                              <tr key={item.item_id}>
-                                 <td>{item.item_name}</td>
-                                 <td>
-                                    <img
-                                       src={item.item_image}
-                                       alt={item.item_name}
-                                       style={{ width: "100px", height: "100px", cursor: "pointer", display: "block", margin: "0 auto" }}
-                                    />
-                                 </td>
-                                 <td>{item.description}</td>
-                                 <td>{item.quantity}</td>
-                                 <td>${parseFloat(item.reservation_price_perday).toFixed(2)}</td>
-                                 <td>
-                                    <button
-                                       className="btn btn-primary"
-                                       onClick={() => handleReserveClick(item)}
-                                    >
-                                       Reserve
-                                    </button>
-                                 </td>
-                              </tr>
-                           ))}
-                        </tbody>
-                     </table>
+                     {filteredReservations.length === 0 ? (
+                        <p>No reservations found.</p>
+                     ) : (
+                        <>
+                           <table className="table table-bordered">
+                              <thead className="thead-dark">
+                                 <tr>
+                                    <th>Reservation ID</th>
+                                    <th>Item Name</th>
+                                    <th>Image</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Quantity Reserved</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 {currentReservations.map(reservation => (
+                                    <tr key={reservation.reservation_id}>
+                                       <td>{reservation.reservation_id}</td>
+                                       <td>{reservation.item_name}</td>
+                                       <td>
+                                          <img
+                                             src={reservation.item_image}
+                                             alt={reservation.item_name}
+                                             style={{ width: "100px", height: "100px", cursor: "pointer", display: "block", margin: "0 auto" }}
+                                          />
+                                       </td>
+                                       <td>{reservation.reservation_date_start}</td>
+                                       <td>{reservation.reservation_date_end}</td>
+                                       <td>{reservation.quantity_reserved}</td>
+                                       <td>${parseFloat(reservation.total_reservation_price).toFixed(2)}</td>
+                                       <td>{reservation.status}</td>
+                                       <td>
+                                          {reservation.status !== 'cancelled' && (
+                                             <button
+                                                className="btn btn-danger"
+                                                onClick={() => handleCancelReservation(reservation.reservation_id)}
+                                             >
+                                                Cancel
+                                             </button>
+                                          )}
+                                       </td>
+                                    </tr>
+                                 ))}
+                              </tbody>
+                           </table>
 
-                     <nav className="d-flex justify-content-center">
-                        <ul className="pagination">
-                           {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
-                              <li key={index + 1} className="page-item">
-                                 <button onClick={() => paginate(index + 1)} className="page-link">
-                                    {index + 1}
-                                 </button>
-                              </li>
-                           ))}
-                        </ul>
-                     </nav>
+                           {filteredReservations.length > reservationsPerPage && (
+                              <nav className="d-flex justify-content-center">
+                                 <ul className="pagination">
+                                    {Array.from({ length: Math.ceil(filteredReservations.length / reservationsPerPage) }, (_, index) => (
+                                       <li key={index + 1} className="page-item">
+                                          <button onClick={() => paginateReservations(index + 1)} className="page-link">
+                                             {index + 1}
+                                          </button>
+                                       </li>
+                                    ))}
+                                 </ul>
+                              </nav>
+                           )}
+                        </>
+                     )}
                   </div>
                </div>
             </div>
          </div>
-
-         {/* Reservation Modal */}
-         <Modal show={showModal} onHide={() => setShowModal(false)}>
-            <Modal.Header closeButton>
-               <Modal.Title>Reserve Item</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-               {selectedItem && (
-                  <div>
-                     <p><strong>Item Name:</strong> {selectedItem.item_name}</p>
-                     <p><strong>Description:</strong> {selectedItem.description}</p>
-                     <p><strong>Price Per Day:</strong> ${parseFloat(selectedItem.reservation_price_perday).toFixed(2)}</p>
-                     <img
-                        src={selectedItem.item_image}
-                        alt={selectedItem.item_name}
-                        style={{ width: "100%", height: "auto", display: "block", margin: "0 auto" }}
-                     />
-                     <div className="form-group mt-3">
-                        <label htmlFor="reservation_date_start">Start Date</label>
-                        <input
-                           type="date"
-                           id="reservation_date_start"
-                           name="reservation_date_start"
-                           className="form-control"
-                           onChange={handleInputChange}
-                           value={reservationDetails.reservation_date_start}
-                        />
-                     </div>
-                     <div className="form-group">
-                        <label htmlFor="reservation_date_end">End Date</label>
-                        <input
-                           type="date"
-                           id="reservation_date_end"
-                           name="reservation_date_end"
-                           className="form-control"
-                           onChange={handleInputChange}
-                           value={reservationDetails.reservation_date_end}
-                        />
-                     </div>
-                     <div className="form-group">
-                        <label htmlFor="quantity_reserved">Quantity</label>
-                        <input
-                           type="number"
-                           id="quantity_reserved"
-                           name="quantity_reserved"
-                           className="form-control"
-                           min="1"
-                           max={selectedItem.quantity}
-                           value={reservationDetails.quantity_reserved}
-                           onChange={handleInputChange}
-                        />
-                     </div>
-                  </div>
-               )}
-            </Modal.Body>
-            <Modal.Footer>
-               <Button variant="secondary" onClick={() => setShowModal(false)}>
-                  Close
-               </Button>
-               <Button variant="primary" onClick={handleReserve}>
-                  Reserve
-               </Button>
-            </Modal.Footer>
-         </Modal>
       </>
    );
 };
 
 export default UserReservation;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

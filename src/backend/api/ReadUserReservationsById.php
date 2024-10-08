@@ -16,21 +16,31 @@ if ($requestMethod == "OPTIONS") {
 }
 
 if ($requestMethod == "GET") {
-   $latestReservationId = getLatestReservationId();
+   if (isset($_GET['user_id'])) {
+      $user_id = $_GET['user_id'];
+      $reservations = getReservationsByUserId($user_id);
 
-   if ($latestReservationId !== null) {
-      $data = [
-         'status' => 200,
-         'latest_reservation_id' => $latestReservationId,
-      ];
-      header("HTTP/1.1 200 OK");
-      echo json_encode($data);
+      if (!empty($reservations)) {
+         $data = [
+            'status' => 200,
+            'reservations' => $reservations,
+         ];
+         header("HTTP/1.1 200 OK");
+         echo json_encode($data);
+      } else {
+         $data = [
+            'status' => 404,
+            'message' => 'No reservations found for the given user ID',
+         ];
+         header("HTTP/1.1 404 Not Found");
+         echo json_encode($data);
+      }
    } else {
       $data = [
-         'status' => 404,
-         'message' => 'No reservations found',
+         'status' => 400,
+         'message' => 'User ID is required',
       ];
-      header("HTTP/1.1 404 Not Found");
+      header("HTTP/1.1 400 Bad Request");
       echo json_encode($data);
    }
 } else {
