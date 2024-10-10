@@ -14,35 +14,38 @@ import StaffDashboard from './frontend/staff/StaffDashboard';
 import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 import UserReservation from './frontend/user/UserReservation';
 import UserFAQs from './frontend/user/UserFAQs';
+import StaffInventoryManagement from './frontend/staff/StaffInventoryManagement';
 
 function App() {
   return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/register" element={<Register onCreate={() => window.location.reload()} />} />
-          <Route path="/login" element={<Login />} />
+    <Router>
+      <Routes>
+        {/* Routes for All */}
+        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/register" element={<Register onCreate={() => window.location.reload()} />} />
+        <Route path="/login" element={<Login />} />
 
-          {/* Routes for User */}
-          <Route path="/login/user_dashboard" element={<UserDashboard />} />
-          <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
-          <Route path="/login/user_reservation" element={<UserReservation />} />
-          <Route path="/login/user_faqs" element={<UserFAQs />} />
+        {/* Routes for User */}
+        <Route path="/login/user_dashboard" element={<UserDashboard />} />
+        <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
+        <Route path="/login/user_reservation" element={<UserReservation />} />
+        <Route path="/login/user_faqs" element={<UserFAQs />} />
 
-          {/* Routes Staff */}
-          <Route path="/login/staff_dashboard" element={<StaffDashboard />} />
+        {/* Routes Staff */}
+        <Route path="/login/staff_dashboard" element={<StaffDashboard />} />
+        <Route path="/login/staff_inventorymanagement" element={<StaffInventoryManagement />} />
 
-          {/* Route for BasicCRUD */}
-          <Route path="/basic_crud" element={<BasicCRUD />}>
-            <Route path="create_user" element={<CreateUser onCreate={() => window.location.reload()} />} />
-            <Route path="read_user" element={<ReadUser />} />
-            <Route path="update_user" element={<UpdateUser />} />
-            <Route path="delete_user" element={<DeleteUser />} />
-            <Route path="inventory_items_crud" element={<InventoryItemsCRUD />} />
-          </Route>
-        </Routes>
-      </Router>
+        {/* Route for BasicCRUD */}
+        <Route path="/basic_crud" element={<BasicCRUD />}>
+          <Route path="create_user" element={<CreateUser onCreate={() => window.location.reload()} />} />
+          <Route path="read_user" element={<ReadUser />} />
+          <Route path="update_user" element={<UpdateUser />} />
+          <Route path="delete_user" element={<DeleteUser />} />
+          <Route path="inventory_items_crud" element={<InventoryItemsCRUD />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

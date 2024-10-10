@@ -48,24 +48,25 @@ function getInventoryItems() {
     }
 }
 
+
 function insertInventoryItem($item_id, $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status) {
-     global $conn;
+    global $conn;
 
-     $query = "INSERT INTO tbl_inventory_items (item_id, item_name, item_image, description, quantity, price, reservation_price_perday, status) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-     $stmt = $conn->prepare($query);
-     $stmt->bind_param("ssssidds", $item_id, $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status);
+    $query = "INSERT INTO tbl_inventory_items (item_id, item_name, item_image, description, quantity, price, reservation_price_perday, status) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssssddss", $item_id, $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status);
 
-     if ($stmt->execute()) {
-          $data = [
-               'status' => 201,
-               'message' => 'Inventory Item Inserted Successfully!'
-          ];
-          header("HTTP/1.1 201 Created");
-          return json_encode($data);
-     } else {
-          error422("Error: " . $stmt->error);
-     }
+    if ($stmt->execute()) {
+        $data = [
+            'status' => 201,
+            'message' => 'Inventory Item Inserted Successfully!'
+        ];
+        header("HTTP/1.1 201 Created");
+        return json_encode($data);
+    } else {
+        error422("Error: {$stmt->error}");
+    }
 }
 
 function updateInventoryItem($item_id, $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status) {
@@ -73,7 +74,7 @@ function updateInventoryItem($item_id, $item_name, $item_image, $description, $q
 
      $query = "UPDATE tbl_inventory_items SET item_name = ?, item_image = ?, description = ?, quantity = ?, price = ?, reservation_price_perday = ?, status = ? WHERE item_id = ?";
      $stmt = $conn->prepare($query);
-     $stmt->bind_param("ssssidds", $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status, $item_id);
+     $stmt->bind_param("sssidsss", $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status, $item_id);
 
      if ($stmt->execute()) {
           $data = [
@@ -134,4 +135,38 @@ function updateInventoryQuantity($item_id, $quantity) {
      }
  }
  
+function getLatestItemId() {
+     global $conn;
+
+     $query = "SELECT item_id FROM tbl_inventory_items ORDER BY item_id DESC LIMIT 1";
+     $query_run = $conn->query($query);
+
+     if ($query_run) {
+          if ($query_run->num_rows > 0) {
+               $res = $query_run->fetch_assoc();
+
+               $data = [
+                    'status' => 200,
+                    'message' => 'Latest Item ID Fetched Successfully!',
+                    'data' => $res['item_id']
+               ];
+               header("HTTP/1.1 200 OK");
+               return json_encode($data);
+          } else {
+               $data = [
+                    'status' => 404,
+                    'message' => 'No record found',
+               ];
+               header("HTTP/1.1 404 Not Found");
+               return json_encode($data);
+          }
+     } else {
+          $data = [
+               'status' => 500,
+               'message' => 'Internal Server Error: ' . $conn->error,
+          ];
+          header("HTTP/1.1 500 Internal Server Error");
+          return json_encode($data);
+     }
+}
 ?>

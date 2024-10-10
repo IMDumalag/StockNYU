@@ -5,7 +5,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import globalVariable from '/src/backend/data/GlobalVariable';
 
-const Toolbar = () => {
+const StaffToolbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
@@ -45,9 +45,6 @@ const Toolbar = () => {
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li className="nav-item">
-            <a className="nav-link" href="#">Message Inbox</a>
-          </li>
           <li className="nav-item dropdown">
             <IconButton onClick={handleClick} color="inherit">
               <Avatar>
@@ -77,4 +74,4 @@ const Toolbar = () => {
   );
 };
 
-export default Toolbar;
+export default StaffToolbar;
