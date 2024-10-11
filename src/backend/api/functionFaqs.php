@@ -14,28 +14,52 @@ function error422($message)
    exit;
 }
 
-// Function to view all FAQs
-function viewAllFaqs()
+// Function to get the latest FAQ ID and increment it
+function getNextFaqId()
 {
    global $conn;
 
-   $query = "SELECT f.faq_id, f.question, f.answer, f.created_by, u.f_name, u.l_name, f.created_date
-          FROM tbl_faqs as f
-          INNER JOIN tbl_users as u ON f.created_by = u.user_id";
+   $query = "SELECT MAX(faq_id) as max_id FROM tbl_faqs";
    $result = mysqli_query($conn, $query);
 
-   if (!$result) {
-     error422("Failed to fetch FAQs");
-   }
+   if ($result) {
+      $row = mysqli_fetch_assoc($result);
+      $latestFaqId = $row['max_id'];
 
-   $faqs = [];
-   while ($row = mysqli_fetch_assoc($result)) {
-     $faqs[] = $row;
+      if ($latestFaqId) {
+         // Increment the latest faq_id by 1
+         return (int)$latestFaqId + 1;
+      } else {
+         // If no rows are found, start at 1
+         return 1;
+      }
+   } else {
+      error422("Failed to fetch the latest FAQ ID");
    }
-
-   header("Content-Type: application/json");
-   echo json_encode($faqs);
-   exit;
 }
 
+// Function to insert a new FAQ
+function insertFaq($question, $answer, $created_by, $created_date)
+{
+   global $conn;
+
+   // Get the next faq_id by incrementing the latest one
+   $faq_id = getNextFaqId();
+
+   $query = "INSERT INTO tbl_faqs (faq_id, question, answer, created_by, created_date) VALUES (?, ?, ?, ?, ?)";
+   $stmt = $conn->prepare($query);
+   $stmt->bind_param("sssss", $faq_id, $question, $answer, $created_by, $created_date);
+
+   if ($stmt->execute()) {
+      $data = [
+         'status' => 201,
+         'message' => 'FAQ Inserted Successfully!',
+         'faq_id' => $faq_id
+      ];
+      header("HTTP/1.1 201 Created");
+      echo json_encode($data);
+   } else {
+      error422("Error: {$stmt->error}");
+   }
+}
 ?>
