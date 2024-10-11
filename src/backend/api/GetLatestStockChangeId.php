@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With");
 
-require('function2.php');
+require('functionStockChange.php');
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 
@@ -15,22 +15,30 @@ if ($requestMethod == "OPTIONS") {
 }
 
 if ($requestMethod == "GET") {
-   $latestItemId = getLatestItemId(); // Get the plain item_id
+   $latestStockChangeId = getLatestStockChangeId();
 
-   if ($latestItemId !== null) {
+   if ($latestStockChangeId !== null) {
       $data = [
          'status' => 200,
-         'latest_item_id' => $latestItemId, // Return the latest item_id directly
+         'latest_stock_change_id' => $latestStockChangeId,
       ];
       header("HTTP/1.1 200 OK");
       echo json_encode($data);
    } else {
       $data = [
          'status' => 404,
-         'message' => 'No items found',
+         'message' => 'No stock changes found',
       ];
       header("HTTP/1.1 404 Not Found");
       echo json_encode($data);
    }
+} else {
+   $data = [
+      'status' => 405,
+      'message' => $requestMethod . ' Method Not Allowed',
+   ];
+   header("HTTP/1.1 405 Method Not Allowed");
+   echo json_encode($data);
 }
+
 ?>

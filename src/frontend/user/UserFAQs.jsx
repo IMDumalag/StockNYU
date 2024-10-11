@@ -60,17 +60,17 @@ const UserFAQs = () => {
                      {filteredFaqs.length > 0 ? (
                         <div className="faq-feed">
                            {filteredFaqs.map(faq => (
-                              <Accordion key={faq.id} className="mb-3">
+                              <Accordion key={faq.faq_id} className="mb-3">
                                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                     <Typography>{faq.question}</Typography>
                                  </AccordionSummary>
                                  <AccordionDetails>
                                     <Typography>{faq.answer}</Typography>
                                     <Typography variant="body2" color="textSecondary">
-                                       <strong>Created by:</strong> {faq.staff_name}
+                                       <strong>Created by:</strong> {faq.f_name} {faq.l_name}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
-                                       <strong>Date:</strong> {formatDate(faq.created_at)}
+                                       <strong>Date:</strong> {formatDate(faq.created_date)} {new Date(faq.created_date).toLocaleTimeString()}
                                     </Typography>
                                  </AccordionDetails>
                               </Accordion>

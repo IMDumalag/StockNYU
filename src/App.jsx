@@ -15,6 +15,8 @@ import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 import UserReservation from './frontend/user/UserReservation';
 import UserFAQs from './frontend/user/UserFAQs';
 import StaffInventoryManagement from './frontend/staff/StaffInventoryManagement';
+import StaffStockHistory from './frontend/staff/StaffStockHistory';
+import StaffFaqsAndAnnouncement from './frontend/staff/StaffFaqsAndAnnouncement';
 
 function App() {
   return (
@@ -35,6 +37,10 @@ function App() {
         {/* Routes Staff */}
         <Route path="/login/staff_dashboard" element={<StaffDashboard />} />
         <Route path="/login/staff_inventorymanagement" element={<StaffInventoryManagement />} />
+        <Route path="/login/staff_stockhistory" element={<StaffStockHistory />} />
+        <Route path="/login/staff_faqsandannouncement" element={<StaffFaqsAndAnnouncement />} />
+        <Route path="/login/staff_faqs" element={<StaffFaqsAndAnnouncement />} />
+        <Route path="/login/staff_announcement" element={<StaffFaqsAndAnnouncement />} />
 
         {/* Route for BasicCRUD */}
         <Route path="/basic_crud" element={<BasicCRUD />}>

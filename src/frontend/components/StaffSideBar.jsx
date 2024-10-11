@@ -11,8 +11,8 @@ const StaffSidebar = () => {
       </div>
       <div className="list-group list-group-flush">
         <a href="/login/staff_inventorymanagement" className="list-group-item list-group-item-action bg-light">Stock Inventory</a>
-        <a href="#" className="list-group-item list-group-item-action bg-light">Stock History</a>
-        <a href="#" className="list-group-item list-group-item-action bg-light">FAQs and Announcement</a>
+        <a href="/login/staff_stockhistory" className="list-group-item list-group-item-action bg-light">Stock History</a>
+        <a href="/login/staff_faqsandannouncement" className="list-group-item list-group-item-action bg-light">FAQs and Announcement</a>
         <a href="#" className="list-group-item list-group-item-action bg-light">Analytics</a>
       </div>
     </div>

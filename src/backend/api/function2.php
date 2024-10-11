@@ -135,38 +135,25 @@ function updateInventoryQuantity($item_id, $quantity) {
      }
  }
  
-function getLatestItemId() {
+ function getLatestItemId() {
      global $conn;
-
-     $query = "SELECT item_id FROM tbl_inventory_items ORDER BY item_id DESC LIMIT 1";
+ 
+     // Extract the numeric part of item_id and order by it, convert the numeric part to an integer for proper sorting
+     $query = "SELECT item_id FROM tbl_inventory_items 
+               ORDER BY CAST(SUBSTRING(item_id, 7) AS UNSIGNED) DESC 
+               LIMIT 1";
      $query_run = $conn->query($query);
-
+ 
      if ($query_run) {
-          if ($query_run->num_rows > 0) {
-               $res = $query_run->fetch_assoc();
-
-               $data = [
-                    'status' => 200,
-                    'message' => 'Latest Item ID Fetched Successfully!',
-                    'data' => $res['item_id']
-               ];
-               header("HTTP/1.1 200 OK");
-               return json_encode($data);
-          } else {
-               $data = [
-                    'status' => 404,
-                    'message' => 'No record found',
-               ];
-               header("HTTP/1.1 404 Not Found");
-               return json_encode($data);
-          }
+         if ($query_run->num_rows > 0) {
+             $res = $query_run->fetch_assoc();
+             return $res['item_id']; // Return only the latest item_id
+         } else {
+             return null; // No record found
+         }
      } else {
-          $data = [
-               'status' => 500,
-               'message' => 'Internal Server Error: ' . $conn->error,
-          ];
-          header("HTTP/1.1 500 Internal Server Error");
-          return json_encode($data);
+         return null; // Database error
      }
-}
+ }
+ 
 ?>

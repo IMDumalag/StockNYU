@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
+import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
 
 const StaffInventoryManagement = () => {
    const [items, setItems] = useState([]);
@@ -21,6 +22,10 @@ const StaffInventoryManagement = () => {
    const [showModal, setShowModal] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
    const itemsPerPage = 5;
+
+   // Get user data from global variable
+   const userData = globalVariable.getUserData();
+   const userId = userData.user_id;  // Assuming user_id is the key for user ID
 
    // Fetch data from the backend
    const fetchData = async () => {
@@ -40,10 +45,12 @@ const StaffInventoryManagement = () => {
    const fetchLatestItemId = async () => {
       try {
          const response = await axios.get("http://localhost/stock-nyu/src/backend/api/GetLatestItemId.php");
-         if (response.data.status === 200) {
+   
+         // Check if the response contains the expected structure
+         if (response && response.data && response.data.status === 200) {
             return response.data.latest_item_id;
          } else {
-            console.error("Error fetching latest item ID", response.data.message);
+            console.error("Error: Unexpected response structure", response.data);
             return null;
          }
       } catch (error) {
@@ -53,17 +60,70 @@ const StaffInventoryManagement = () => {
    };
 
    const generateNextItemId = async () => {
-      const latestItemId = await fetchLatestItemId(); 
-  
+      const latestItemId = await fetchLatestItemId();
+   
       if (!latestItemId) {
-        return `NUD-M00001`;
+         return `NUD-M00001`;  // Fallback if there's no latest item
       } else {
-        // Extract the numeric part of the last ID (e.g., '000001' from 'NUD-M00001')
-        const numericPart = latestItemId.split('-')[1]; // Get the '000001' part
-        const newNumber = String(parseInt(numericPart) + 1).padStart(5, '0'); // Increment the number and pad with zeros
-        return `NUD-M${newNumber}`;
+         // Ensure the item ID follows the expected format before processing
+         const parts = latestItemId.split('-');  // Split by '-'
+         if (parts.length === 2 && parts[1].length > 0) {
+            const numericPart = parts[1].replace(/\D/g, ''); // Remove any non-numeric characters
+            const newNumber = String(parseInt(numericPart, 10) + 1).padStart(5, '0'); // Increment and pad with zeros
+            return `NUD-M${newNumber}`;
+         } else {
+            console.error("Unexpected item ID format:", latestItemId);
+            return `NUD-M00001`; // Fallback if the format is unexpected
+         }
       }
-    };
+   };
+
+   // Fetch the latest stock change ID from the backend
+   const fetchLatestStockChangeId = async () => {
+      try {
+         const response = await axios.get("http://localhost/stock-nyu/src/backend/api/GetLatestStockChangeId.php");
+         if (response && response.data && response.data.status === 200) {
+            return response.data.latest_stock_change_id;
+         } else {
+            console.error("Error: Unexpected response structure", response.data);
+            return null;
+         }
+      } catch (error) {
+         console.error("Error fetching latest stock change ID", error);
+         return null;
+      }
+   };
+
+   const generateNextStockChangeId = async () => {
+      const latestStockChangeId = await fetchLatestStockChangeId();
+   
+      if (!latestStockChangeId) {
+         return `SC-00001`;  // Fallback if there's no latest stock change
+      } else {
+         // Ensure the stock change ID follows the expected format before processing
+         const parts = latestStockChangeId.split('-');  // Split by '-'
+         if (parts.length === 2 && parts[1].length > 0) {
+            const numericPart = parts[1].replace(/\D/g, ''); // Remove any non-numeric characters
+            const newNumber = String(parseInt(numericPart, 10) + 1).padStart(5, '0'); // Increment and pad with zeros
+            return `SC-${newNumber}`;
+         } else {
+            console.error("Unexpected stock change ID format:", latestStockChangeId);
+            return `SC-00001`; // Fallback if the format is unexpected
+         }
+      }
+   };
+
+   // Function to send stock change data to the backend
+   const sendStockChange = async (changeData) => {
+      try {
+         const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateStockChange.php", changeData);
+         if (response.data.status !== 201) {
+            console.error("Error recording stock change", response.data.message);
+         }
+      } catch (error) {
+         console.error("Error recording stock change", error);
+      }
+   };
 
    useEffect(() => {
       fetchData();
@@ -89,6 +149,17 @@ const StaffInventoryManagement = () => {
                setItems(updatedItems);
                setEditMode(false);
                setShowModal(false);
+
+               // Send stock change data
+               const changeData = {
+                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
+                  item_id: item.item_id,
+                  user_id: userId, // Use the actual user ID
+                  quantity: item.quantity,
+                  note: "Stock updated",
+                  created_at: new Date().toISOString(),
+               };
+               sendStockChange(changeData);
             } else {
                console.error("Error updating item", response.data.message);
             }
@@ -113,6 +184,17 @@ const StaffInventoryManagement = () => {
                   reservation_price_perday: "",
                   status: "Available",
                });
+
+               // Send stock change data
+               const changeData = {
+                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
+                  item_id: newItem.item_id,
+                  user_id: userId, // Use the actual user ID
+                  quantity: newItem.quantity,
+                  note: "New stock added",
+                  created_at: new Date().toISOString(),
+               };
+               sendStockChange(changeData);
             } else {
                console.error("Error adding item", response.data.message);
             }

@@ -77,4 +77,22 @@ function getStockChangesByItemId($item_id)
    return $stock_changes;
 }
 
+// Function to retrieve all stock changes
+function getAllStockChanges()
+{
+   global $conn;
+
+   $query = "SELECT sc.change_id, sc.item_id, it.item_name, sc.user_id, sc.quantity, sc.note, sc.created_at
+             FROM tbl_stock_change as sc
+             INNER JOIN tbl_inventory_items as it ON sc.item_id = it.item_id";
+   $result = $conn->query($query);
+
+   $stock_changes = [];
+   while ($row = $result->fetch_assoc()) {
+      $stock_changes[] = $row;
+   }
+
+   return $stock_changes;
+}
+
 ?>
