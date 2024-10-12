@@ -62,4 +62,32 @@ function insertFaq($question, $answer, $created_by, $created_date)
       error422("Error: {$stmt->error}");
    }
 }
+
+// Function to view all FAQs
+function viewAllFaqs()
+{
+   global $conn;
+
+   $query = "SELECT f.faq_id, f.question, f.answer, f.created_by, u.f_name, u.l_name, f.created_date 
+             FROM tbl_faqs as f
+             INNER JOIN tbl_users as u ON f.created_by = u.user_id";
+   $result = mysqli_query($conn, $query);
+
+   if ($result) {
+      $faqs = [];
+
+      while ($row = mysqli_fetch_assoc($result)) {
+         $faqs[] = $row;
+      }
+
+      $data = [
+         'status' => 200,
+         'faqs' => $faqs,
+      ];
+      header("HTTP/1.1 200 OK");
+      echo json_encode($data);
+   } else {
+      error422("Failed to fetch FAQs");
+   }
+}
 ?>
