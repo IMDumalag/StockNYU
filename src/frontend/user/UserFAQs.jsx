@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { TextField, Container, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Sidebar from "../components/UserSidebar";
-import Toolbar from "../components/UserToolbar";
+import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import UserSidebar from '../components/UserSidebar';
+import UserToolbar from '../components/UserToolbar';
 
 const UserFAQs = () => {
    const [faqs, setFaqs] = useState([]);
    const [searchTerm, setSearchTerm] = useState('');
+   const [currentPage, setCurrentPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = useState(5);
 
    useEffect(() => {
       fetchFaqs();
@@ -16,10 +16,11 @@ const UserFAQs = () => {
 
    const fetchFaqs = async () => {
       try {
-         const response = await axios.get('http://localhost/stock-nyu/src/backend/api/ReadFaqsList.php');
-         setFaqs(response.data);
+         const response = await axios.get('http://localhost/stock-nyu/src/backend/api/readFaqsList.php');
+         setFaqs(response.data.faqs || []); // Make sure the data is always an array
       } catch (error) {
          console.error('Error fetching FAQs:', error);
+         setFaqs([]); // Default to empty array on error
       }
    };
 
@@ -27,60 +28,74 @@ const UserFAQs = () => {
       setSearchTerm(event.target.value);
    };
 
-   const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: 'long', day: '2-digit' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+   const handleChangePage = (event, newPage) => {
+      setCurrentPage(newPage);
    };
 
-   const filteredFaqs = faqs.filter(faq =>
-      faq.question.toLowerCase().includes(searchTerm.toLowerCase())
-   );
+   const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setCurrentPage(0);
+   };
+
+   // Filter FAQs based on both the question and answer
+   const filteredFaqs = faqs.filter(faq => {
+      const regex = new RegExp(searchTerm, 'i'); // 'i' makes it case-insensitive
+      return regex.test(faq.question) || regex.test(faq.answer);
+   });
 
    return (
       <>
-         <Toolbar />
+         <UserToolbar />
          <div className="container-fluid">
             <div className="row">
                <div className="col-md-3">
-                  <Sidebar />
+                  <UserSidebar />
                </div>
                <div className="col-md-9">
                   <Container>
-                     <h1 className="text-center my-4">Frequently Asked Questions</h1>
+                     <Typography variant="h4" className="my-4">Frequently Asked Questions</Typography>
 
                      <TextField
                         variant="outlined"
-                        label="Search by question"
+                        label="Search by Question or Answer"
                         fullWidth
                         value={searchTerm}
                         onChange={handleSearch}
                         className="mb-4"
                      />
 
-                     {filteredFaqs.length > 0 ? (
-                        <div className="faq-feed">
-                           {filteredFaqs.map(faq => (
-                              <Accordion key={faq.faq_id} className="mb-3">
-                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography>{faq.question}</Typography>
-                                 </AccordionSummary>
-                                 <AccordionDetails>
-                                    <Typography>{faq.answer}</Typography>
-                                    <Typography variant="body2" color="textSecondary">
-                                       <strong>Created by:</strong> {faq.f_name} {faq.l_name}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary">
-                                       <strong>Date:</strong> {formatDate(faq.created_date)} {new Date(faq.created_date).toLocaleTimeString()}
-                                    </Typography>
-                                 </AccordionDetails>
-                              </Accordion>
-                           ))}
-                        </div>
-                     ) : (
-                        <Typography variant="body1" className="text-center mt-4">
-                           No FAQs found.
-                        </Typography>
-                     )}
+                     <TableContainer component={Paper}>
+                        <Table>
+                           <TableHead>
+                              <TableRow>
+                                 <TableCell>Question</TableCell>
+                                 <TableCell>Answer</TableCell>
+                                 <TableCell>Created By</TableCell>
+                                 <TableCell>Created Date</TableCell>
+                              </TableRow>
+                           </TableHead>
+                           <TableBody>
+                              {filteredFaqs.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((faq) => (
+                                 <TableRow key={faq.faq_id}>
+                                    <TableCell>{faq.question}</TableCell>
+                                    <TableCell>{faq.answer}</TableCell>
+                                    <TableCell>{`${faq.f_name} ${faq.l_name}`}</TableCell>
+                                    <TableCell>{new Date(faq.created_date).toLocaleString()}</TableCell>
+                                 </TableRow>
+                              ))}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
+
+                     <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredFaqs.length}
+                        rowsPerPage={rowsPerPage}
+                        page={currentPage}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                     />
                   </Container>
                </div>
             </div>
