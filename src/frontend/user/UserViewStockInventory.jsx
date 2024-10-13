@@ -215,7 +215,7 @@ const UserViewStockInventory = () => {
                     <th>Image</th>
                     <th>Description</th>
                     <th>Quantity</th>
-                    <th>Price</th>
+                    <th>Price (₱)</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -234,7 +234,7 @@ const UserViewStockInventory = () => {
                       </td>
                       <td>{item.description}</td>
                       <td>{item.quantity}</td>
-                      <td>{item.price}</td>
+                      <td>₱{item.price}</td>
                       <td>{item.status}</td>
                       <td>
                         <button
