@@ -1,0 +1,68 @@
+.toolbar-gradient {
+   background: linear-gradient(270deg, #FFFEF9 0.81%, #F8D34E 62.6%);
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0 20px;
+}
+
+.message-inbox {
+   width: 35px; /* Increased bell icon size */
+   height: 40px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin-right: 20px;
+}
+
+.message-inbox .MuiSvgIcon-root {
+   font-size: 35px !important; /* Increased bell icon size */
+   color: #001E4F;  /* Bell icon color */
+}
+
+.nav-item {
+   display: flex;
+   align-items: center;
+}
+
+.nav-item.user-profile {
+   margin-right: 20px; /* Adjust spacing on the right of the profile avatar */
+}
+
+.avatar {
+   display: flex;
+   align-items: center;
+   width: 45px; /* Increased profile icon size */
+   height: 45px;
+   border: 2px solid #001E4F; /* Added border for a professional look */
+}
+
+.username {
+   color: var(--Color, #001840);
+   font-size: 18px;
+   font-style: normal;
+   font-weight: 600;
+   line-height: normal;
+   margin-left: 3px; /* Adjusted spacing between profile icon and username */
+}
+
+.dropdown-arrow {
+   margin-left: 5px;
+   width: 16px; /* Size of the dropdown arrow */
+   height: auto;
+   color: rgba(0, 30, 79, 0.9); /* Darker dropdown arrow */
+   cursor: pointer;
+}
+
+ul.navbar-nav {
+   display: flex;
+   align-items: center;
+   justify-content: flex-end;
+   gap: 4px; /* Adjust spacing between icons */
+}
+
+.user-profile .username:hover,
+.user-profile .avatar:hover {
+   background-color: transparent; /* Remove background color on hover */
+   cursor: pointer; /* Optionally, you can add a pointer cursor on hover */
+}
