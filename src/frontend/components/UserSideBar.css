@@ -3,12 +3,14 @@
    border: none;
    font-size: 24px;
    cursor: pointer;
-   font-weight: 700;
-   transition: color 0.3s ease; 
+   font-weight: 900;
+   transition: color 0.3s ease;
+   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+   z-index: 1001; /* Keep the button above the toolbar */
 }
 
 .hamburger-open {
-   color: white; 
+   color: white;
 }
 
 .hamburger-closed {
@@ -21,16 +23,41 @@
    top: 0;
    left: 0;
    height: 100%;
-   transition: transform 0.3s ease;
+   transition: transform 0.3s ease, z-index 0.3s ease; /* Add z-index transition */
    background-color: #001E4F; 
    padding-top: 60px;
-   overflow: hidden; 
+   overflow: hidden;
+   z-index: 999; /* Sidebar's default z-index */
 }
 
 .sidebar-open {
    transform: translateX(0); 
+   z-index: 1001; 
 }
 
 .sidebar-closed {
    transform: translateX(-250px); 
+   z-index: 999; 
+}
+
+.menu-divider {
+   border: none; /* Remove default border styling */
+   border-top: 1px solid rgba(0, 0, 0, 0.2); /* Light-colored line */
+   margin: 10px 0; /* Spacing above and below the divider */
+}
+
+.list-group-item {
+   border: none; /* Remove default borders */
+   position: relative;
+   font-weight: bold;
+}
+
+.list-group-item::after {
+   content: "";
+   position: absolute;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   height: 1px;
+   background-color: rgba(255, 255, 255, 0.2); /* Light transparent line */
 }

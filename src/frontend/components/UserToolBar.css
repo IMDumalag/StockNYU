@@ -5,7 +5,12 @@
    justify-content: space-between;
    padding: 0 20px;
    height: 80px; 
-   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Adding a shadow to the entire navbar */
+   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+   position: fixed; /* Make the toolbar fixed */
+   top: 0; /* Position it at the top */
+   left: 0; /* Align it to the left */
+   right: 0; /* Stretch it to the right */
+   z-index: 1000; /* Toolbar's z-index */
 }
 
 .logo-container {
