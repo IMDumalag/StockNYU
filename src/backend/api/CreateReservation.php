@@ -25,7 +25,6 @@ if ($requestMethod == "POST") {
         $reservation_date_start = $_POST['reservation_date_start'] ?? null;
         $reservation_date_end = $_POST['reservation_date_end'] ?? null;
         $quantity_reserved = $_POST['quantity_reserved'] ?? null;
-        $total_reservation_price = $_POST['total_reservation_price'] ?? null;
         $status = $_POST['status'] ?? null;
         $created_at = date('Y-m-d H:i:s'); // Auto-generate the created_at timestamp
 
@@ -38,14 +37,13 @@ if ($requestMethod == "POST") {
         $reservation_date_start = $input['reservation_date_start'] ?? null;
         $reservation_date_end = $input['reservation_date_end'] ?? null;
         $quantity_reserved = $input['quantity_reserved'] ?? null;
-        $total_reservation_price = $input['total_reservation_price'] ?? null;
         $status = $input['status'] ?? null;
         $created_at = date('Y-m-d H:i:s'); // Auto-generate the created_at timestamp
     }
 
     // Validate and create reservation
-    if ($reservation_id && $user_id && $item_id && $reservation_date_start && $reservation_date_end && $quantity_reserved && $total_reservation_price && $status) {
-        createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $total_reservation_price, $status, $created_at);
+    if ($reservation_id && $user_id && $item_id && $reservation_date_start && $reservation_date_end && $quantity_reserved && $status) {
+        createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at);
     } else {
         error422('Invalid input');
     }

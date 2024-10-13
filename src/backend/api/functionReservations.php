@@ -15,15 +15,15 @@ function error422($message)
 }
 
 // Function to handle reservation creation
-function createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $total_reservation_price, $status, $created_at)
+function createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at)
 {
     global $conn;
 
-    $query = "INSERT INTO `tbl_reservations` (`reservation_id`, `user_id`, `item_id`, `reservation_date_start`, `reservation_date_end`, `quantity_reserved`, `total_reservation_price`, `status`, `created_at`) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO `tbl_reservations` (`reservation_id`, `user_id`, `item_id`, `reservation_date_start`, `reservation_date_end`, `quantity_reserved`, `status`, `created_at`) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssssidss", $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $total_reservation_price, $status, $created_at);
+    $stmt->bind_param("sssssidss", $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at);
 
     if ($stmt->execute()) {
         $data = [
@@ -99,6 +99,5 @@ function updateReservationStatus($reservation_id, $new_status)
 
     $stmt->close();
 }
-
 
 ?>
