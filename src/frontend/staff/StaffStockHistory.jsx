@@ -66,10 +66,15 @@ const StaffStockHistory = () => {
                         <Table>
                            <TableHead>
                               <TableRow>
+                                 <TableCell>Change ID</TableCell>
                                  <TableCell>Item ID</TableCell>
                                  <TableCell>Item Name</TableCell>
                                  <TableCell>User ID</TableCell>
-                                 <TableCell>Quantity</TableCell>
+                                 <TableCell>User Name</TableCell>
+                                 <TableCell>Quantity Before</TableCell>
+                                 <TableCell>Quantity Added</TableCell>
+                                 <TableCell>Quantity Subtracted</TableCell>
+                                 <TableCell>Quantity Current</TableCell>
                                  <TableCell>Note</TableCell>
                                  <TableCell>Created At</TableCell>
                               </TableRow>
@@ -77,10 +82,15 @@ const StaffStockHistory = () => {
                            <TableBody>
                               {filteredStockChanges.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((stockChange) => (
                                  <TableRow key={stockChange.change_id}>
+                                    <TableCell>{stockChange.change_id}</TableCell>
                                     <TableCell>{stockChange.item_id}</TableCell>
                                     <TableCell>{stockChange.item_name}</TableCell>
                                     <TableCell>{stockChange.user_id}</TableCell>
-                                    <TableCell>{stockChange.quantity}</TableCell>
+                                    <TableCell>{`${stockChange.f_name} ${stockChange.l_name}`}</TableCell>
+                                    <TableCell>{stockChange.quantity_before}</TableCell>
+                                    <TableCell>{stockChange.quantity_added}</TableCell>
+                                    <TableCell>{stockChange.quantity_subtracted}</TableCell>
+                                    <TableCell>{stockChange.quantity_current}</TableCell>
                                     <TableCell>{stockChange.note}</TableCell>
                                     <TableCell>{new Date(stockChange.created_at).toLocaleString()}</TableCell>
                                  </TableRow>

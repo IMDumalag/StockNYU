@@ -36,11 +36,17 @@ if ($requestMethod == "POST") {
    $quantity_subtracted = $inputData['quantity_subtracted'] ?? null;
    $quantity_current = $inputData['quantity_current'] ?? null;
    $note = $inputData['note'] ?? null;
-   $created_at = $inputData['created_at'] ?? null;
 
-   if (!$change_id || !$item_id || !$user_id || !$quantity_before || !$quantity_added || !$quantity_subtracted || !$quantity_current) {
+   // Validate required fields
+   if (!$change_id || !$item_id || !$user_id || $quantity_before === null || $quantity_added === null || $quantity_subtracted === null || $quantity_current === null) {
       error422('Missing required fields');
    }
+
+   // Ensure quantities are integers
+   $quantity_before = (int)$quantity_before;
+   $quantity_added = (int)$quantity_added;
+   $quantity_subtracted = (int)$quantity_subtracted;
+   $quantity_current = (int)$quantity_current;
 
    createStockChange($change_id, $item_id, $user_id, $quantity_before, $quantity_added, $quantity_subtracted, $quantity_current, $note);
 } else {

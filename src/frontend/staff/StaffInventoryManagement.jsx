@@ -21,6 +21,56 @@ const StaffInventoryManagement = () => {
    const [showModal, setShowModal] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
    const itemsPerPage = 5;
+   const [previousQuantity, setPreviousQuantity] = useState(0); // State to store previous quantity
+
+   const [showAddQuantityModal, setShowAddQuantityModal] = useState(false);
+   const [quantityToAdd, setQuantityToAdd] = useState(0);
+   const [selectedItem, setSelectedItem] = useState(null);
+
+   const handleOpenAddQuantityModal = (item) => {
+      setSelectedItem(item);
+      setShowAddQuantityModal(true);
+   };
+
+   const handleCloseAddQuantityModal = () => {
+      setShowAddQuantityModal(false);
+      setQuantityToAdd(0);
+   };
+
+   const handleAddQuantitySubmit = async () => {
+      if (quantityToAdd && !isNaN(quantityToAdd) && quantityToAdd > 0) {
+         const newQuantity = parseInt(selectedItem.quantity) + parseInt(quantityToAdd);
+         const updatedItem = { ...selectedItem, quantity: newQuantity };
+
+         try {
+            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
+            if (response.data.status === 200) {
+               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
+               setItems(updatedItems);
+
+               const changeData = {
+                  change_id: await generateNextStockChangeId(),
+                  item_id: updatedItem.item_id,
+                  user_id: userId,
+                  quantity_before: selectedItem.quantity,
+                  quantity_added: quantityToAdd,
+                  quantity_subtracted: 0,
+                  quantity_current: newQuantity,
+                  note: "Quantity added",
+                  created_at: new Date().toISOString(),
+               };
+               sendStockChange(changeData);
+               handleCloseAddQuantityModal();
+            } else {
+               console.error("Error updating item", response.data.message);
+            }
+         } catch (error) {
+            console.error("Error updating item", error);
+         }
+      } else {
+         alert("Invalid quantity entered.");
+      }
+   };
 
    // Get user data from global variable
    const userData = globalVariable.getUserData();
@@ -137,28 +187,34 @@ const StaffInventoryManagement = () => {
    // Handle form submission
    const handleFormSubmit = async (e) => {
       e.preventDefault();
-      
-      console.log("Payload being sent:", item); // Verify that `item.status` has the correct value
+   
+      // Automatically update status based on the quantity
+      const updatedStatus = item.quantity <= 0 ? "Out of Stock" : "Available";
+      const updatedItem = { ...item, status: updatedStatus };
+   
+      console.log("Payload being sent:", updatedItem); // Verify the updated item with correct status
       
       if (editMode) {
          try {
-            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", item);
+            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
             if (response.data.status === 200) {
-               const updatedItems = items.map((i) => (i.item_id === item.item_id ? item : i));
+               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
                setItems(updatedItems);
                setEditMode(false);
                setShowModal(false);
-
-               // Send stock change data
+   
+               const quantityAdded = Math.max(0, updatedItem.quantity - previousQuantity);
+               const quantitySubtracted = Math.max(0, previousQuantity - updatedItem.quantity);
+   
                const changeData = {
-                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
-                  item_id: item.item_id,
-                  user_id: userId, // Use the actual user ID
-                  quantity_before: item.quantity_before, // Add quantity_before
-                  quantity_added: item.quantity_added, // Add quantity_added
-                  quantity_subtracted: item.quantity_subtracted, // Add quantity_subtracted
-                  quantity_current: item.quantity, // Use the current quantity
-                  note: "Stock updated",
+                  change_id: await generateNextStockChangeId(),
+                  item_id: updatedItem.item_id,
+                  user_id: userId,
+                  quantity_before: previousQuantity,
+                  quantity_added: quantityAdded,
+                  quantity_subtracted: quantitySubtracted,
+                  quantity_current: updatedItem.quantity,
+                  note: "Details updated",
                   created_at: new Date().toISOString(),
                };
                sendStockChange(changeData);
@@ -171,7 +227,7 @@ const StaffInventoryManagement = () => {
       } else {
          try {
             const nextItemId = await generateNextItemId();
-            const newItem = { ...item, item_id: nextItemId };
+            const newItem = { ...updatedItem, item_id: nextItemId };
             const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateInventoryItems.php", newItem);
             if (response.data.status === 201) {
                setItems([...items, newItem]);
@@ -185,16 +241,15 @@ const StaffInventoryManagement = () => {
                   price: "",
                   status: "Available",
                });
-
-               // Send stock change data
+   
                const changeData = {
-                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
+                  change_id: await generateNextStockChangeId(),
                   item_id: newItem.item_id,
-                  user_id: userId, // Use the actual user ID
-                  quantity_before: 0, // Initial quantity before adding new item
-                  quantity_added: newItem.quantity, // Quantity added
-                  quantity_subtracted: 0, // No quantity subtracted
-                  quantity_current: newItem.quantity, // Use the current quantity
+                  user_id: userId,
+                  quantity_before: 0,
+                  quantity_added: newItem.quantity,
+                  quantity_subtracted: 0,
+                  quantity_current: newItem.quantity,
                   note: "New stock added",
                   created_at: new Date().toISOString(),
                };
@@ -207,25 +262,37 @@ const StaffInventoryManagement = () => {
          }
       }
    };
+   
 
-   // Handle delete item
-   const handleDelete = async (id) => {
-      try {
-         const response = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
-         if (response.data.status === 200) {
+ // Handle delete item
+const handleDelete = async (id) => {
+   try {
+      // First, delete the stock change related to the item
+      const deleteStockChangeResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteStockChange.php`, {
+         data: { item_id: id }
+      });
+
+      if (deleteStockChangeResponse.data.status === 200) {
+         // If stock change deletion is successful, proceed to delete the item
+         const deleteItemResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
+         if (deleteItemResponse.data.status === 200) {
             const filteredItems = items.filter((i) => i.item_id !== id);
             setItems(filteredItems);
          } else {
-            console.error("Error deleting item", response.data.message);
+            console.error("Error deleting item", deleteItemResponse.data.message);
          }
-      } catch (error) {
-         console.error("Error deleting item", error);
+      } else {
+         console.error("Error deleting stock change", deleteStockChangeResponse.data.message);
       }
-   };
+   } catch (error) {
+      console.error("Error deleting item or stock change", error);
+   }
+};
 
    // Handle edit item
    const handleEdit = (item) => {
       setItem({ ...item, status: item.status || "Available" });
+      setPreviousQuantity(item.quantity); // Store the previous quantity before editing
       setEditMode(true);
       setShowModal(true); // Open the modal when editing
    };
@@ -269,6 +336,42 @@ const StaffInventoryManagement = () => {
    // Open popup for image upload
    const openPopup = () => {
       window.open('https://postimages.org', 'popupWindow', 'width=800,height=900,scrollbars=yes,resizable=no');
+   };
+
+   // Handle add quantity
+   const handleAddQuantity = async (item) => {
+      const quantityToAdd = prompt("Enter quantity to add:");
+      if (quantityToAdd && !isNaN(quantityToAdd) && quantityToAdd > 0) {
+         const newQuantity = parseInt(item.quantity) + parseInt(quantityToAdd);
+         const updatedItem = { ...item, quantity: newQuantity };
+
+         try {
+            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
+            if (response.data.status === 200) {
+               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
+               setItems(updatedItems);
+
+               const changeData = {
+                  change_id: await generateNextStockChangeId(),
+                  item_id: updatedItem.item_id,
+                  user_id: userId,
+                  quantity_before: item.quantity,
+                  quantity_added: quantityToAdd,
+                  quantity_subtracted: 0,
+                  quantity_current: newQuantity,
+                  note: "Quantity added",
+                  created_at: new Date().toISOString(),
+               };
+               sendStockChange(changeData);
+            } else {
+               console.error("Error updating item", response.data.message);
+            }
+         } catch (error) {
+            console.error("Error updating item", error);
+         }
+      } else {
+         alert("Invalid quantity entered.");
+      }
    };
 
    return (
@@ -325,6 +428,9 @@ const StaffInventoryManagement = () => {
                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item?.item_id)}>
                                           Delete
                                        </button>
+                                          <button className="btn btn-success btn-sm mr-2" onClick={() => handleOpenAddQuantityModal(item)}>
+                                            Add Quantity
+                                          </button>
                                     </td>
                                  </tr>
                               ))
@@ -450,6 +556,31 @@ const StaffInventoryManagement = () => {
                                     {editMode ? "Update Item" : "Add Item"}
                                  </Button>
                               </div>
+                           </form>
+                        </Modal.Body>
+                     </Modal>
+
+                     <Modal show={showAddQuantityModal} onHide={handleCloseAddQuantityModal}>
+                        <Modal.Header closeButton>
+                           <Modal.Title>Add Quantity</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                           <form onSubmit={(e) => { e.preventDefault(); handleAddQuantitySubmit(); }}>
+                              <div className="form-group">
+                                 <label>Quantity to Add</label>
+                                 <input
+                                    type="number"
+                                    name="quantityToAdd"
+                                    value={quantityToAdd}
+                                    onChange={(e) => setQuantityToAdd(e.target.value)}
+                                    className="form-control"
+                                    placeholder="Enter quantity"
+                                    required
+                                 />
+                              </div>
+                              <Button type="submit" className="btn btn-primary">
+                                 Add Quantity
+                              </Button>
                            </form>
                         </Modal.Body>
                      </Modal>
