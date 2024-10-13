@@ -31,15 +31,18 @@ if ($requestMethod == "POST") {
    $change_id = $inputData['change_id'] ?? null;
    $item_id = $inputData['item_id'] ?? null;
    $user_id = $inputData['user_id'] ?? null;
-   $quantity = $inputData['quantity'] ?? null;
+   $quantity_before = $inputData['quantity_before'] ?? null;
+   $quantity_added = $inputData['quantity_added'] ?? null;
+   $quantity_subtracted = $inputData['quantity_subtracted'] ?? null;
+   $quantity_current = $inputData['quantity_current'] ?? null;
    $note = $inputData['note'] ?? null;
    $created_at = $inputData['created_at'] ?? null;
 
-   if (!$change_id || !$item_id || !$user_id || !$quantity || !$created_at) {
+   if (!$change_id || !$item_id || !$user_id || !$quantity_before || !$quantity_added || !$quantity_subtracted || !$quantity_current) {
       error422('Missing required fields');
    }
 
-   createStockChange($change_id, $item_id, $user_id, $quantity, $note, $created_at);
+   createStockChange($change_id, $item_id, $user_id, $quantity_before, $quantity_added, $quantity_subtracted, $quantity_current, $note);
 } else {
    $data = [
       'status' => 405,

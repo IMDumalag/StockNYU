@@ -15,7 +15,6 @@ const StaffInventoryManagement = () => {
       description: "",
       quantity: "",
       price: "",
-      reservation_price_perday: "",
       status: "Available",
    });
    const [editMode, setEditMode] = useState(false);
@@ -155,7 +154,10 @@ const StaffInventoryManagement = () => {
                   change_id: await generateNextStockChangeId(), // Generate the next stock change ID
                   item_id: item.item_id,
                   user_id: userId, // Use the actual user ID
-                  quantity: item.quantity,
+                  quantity_before: item.quantity_before, // Add quantity_before
+                  quantity_added: item.quantity_added, // Add quantity_added
+                  quantity_subtracted: item.quantity_subtracted, // Add quantity_subtracted
+                  quantity_current: item.quantity, // Use the current quantity
                   note: "Stock updated",
                   created_at: new Date().toISOString(),
                };
@@ -181,7 +183,6 @@ const StaffInventoryManagement = () => {
                   description: "",
                   quantity: "",
                   price: "",
-                  reservation_price_perday: "",
                   status: "Available",
                });
 
@@ -190,7 +191,10 @@ const StaffInventoryManagement = () => {
                   change_id: await generateNextStockChangeId(), // Generate the next stock change ID
                   item_id: newItem.item_id,
                   user_id: userId, // Use the actual user ID
-                  quantity: newItem.quantity,
+                  quantity_before: 0, // Initial quantity before adding new item
+                  quantity_added: newItem.quantity, // Quantity added
+                  quantity_subtracted: 0, // No quantity subtracted
+                  quantity_current: newItem.quantity, // Use the current quantity
                   note: "New stock added",
                   created_at: new Date().toISOString(),
                };
@@ -236,7 +240,6 @@ const StaffInventoryManagement = () => {
          description: "",
          quantity: "",
          price: "",
-         reservation_price_perday: "",
          status: "Available",
       });
       setEditMode(false);
@@ -292,8 +295,7 @@ const StaffInventoryManagement = () => {
                               <th>Image</th>
                               <th>Description</th>
                               <th>Quantity</th>
-                              <th>Price</th>
-                              <th>Reservation Price/Day</th>
+                              <th>Price (₱)</th>
                               <th>Status</th>
                               <th>Actions</th>
                            </tr>
@@ -314,8 +316,7 @@ const StaffInventoryManagement = () => {
                                     </td>
                                     <td>{item?.description}</td>
                                     <td>{item?.quantity}</td>
-                                    <td>{item?.price}</td>
-                                    <td>{item?.reservation_price_perday}</td>
+                                    <td>₱{item?.price}</td>
                                     <td>{item?.status}</td>
                                     <td>
                                        <button className="btn btn-warning btn-sm mr-2" onClick={() => handleEdit(item)}>
@@ -329,7 +330,7 @@ const StaffInventoryManagement = () => {
                               ))
                            ) : (
                               <tr>
-                                 <td colSpan="9">No items available.</td>
+                                 <td colSpan="8">No items available.</td>
                               </tr>
                            )}
                         </tbody>
@@ -412,10 +413,11 @@ const StaffInventoryManagement = () => {
                                     className="form-control"
                                     placeholder="Quantity"
                                     required
+                                    disabled={editMode} // Disable quantity input in edit mode
                                  />
                               </div>
                               <div className="form-group">
-                                 <label>Price</label>
+                                 <label>Price (₱)</label>
                                  <input
                                     type="number"
                                     step="0.01"
@@ -424,19 +426,6 @@ const StaffInventoryManagement = () => {
                                     onChange={handleInputChange}
                                     className="form-control"
                                     placeholder="Price"
-                                    required
-                                 />
-                              </div>
-                              <div className="form-group">
-                                 <label>Reservation Price Per Day</label>
-                                 <input
-                                    type="number"
-                                    step="0.01"
-                                    name="reservation_price_perday"
-                                    value={item.reservation_price_perday}
-                                    onChange={handleInputChange}
-                                    className="form-control"
-                                    placeholder="Reservation Price Per Day"
                                     required
                                  />
                               </div>

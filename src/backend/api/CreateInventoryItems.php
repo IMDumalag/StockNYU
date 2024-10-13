@@ -34,10 +34,9 @@ if ($requestMethod == "POST") {
    $description = $inputData['description'] ?? null;
    $quantity = $inputData['quantity'] ?? null;
    $price = $inputData['price'] ?? null;
-   $reservation_price_perday = $inputData['reservation_price_perday'] ?? null;
    $status = $inputData['status'] ?? null;
 
-   if (!$item_id || !$item_name || !$item_image || !$description || !$quantity || !$price || !$reservation_price_perday || !$status) {
+   if (!$item_id || !$item_name || !$item_image || !$description || !$quantity || !$price || !$status) {
       $data = [
          'status' => 422,
          'message' => 'All fields are required',
@@ -47,7 +46,7 @@ if ($requestMethod == "POST") {
       exit();
    }
 
-   $insertItem = insertInventoryItem($item_id, $item_name, $item_image, $description, $quantity, $price, $reservation_price_perday, $status);
+   $insertItem = insertInventoryItem($item_id, $item_name, $item_image, $description, $quantity, $price, $status);
    echo $insertItem;
 } else {
    $data = [
