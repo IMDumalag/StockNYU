@@ -15,7 +15,7 @@ const Toolbar = () => {
     // State to hold the dashboard text
     const [dashboardText, setDashboardText] = useState('DASHBOARD');
 
-    // Effect to update dashboard text based on current route
+
     useEffect(() => {
         switch (location.pathname) {
             case '/login/user_dashboard':
@@ -55,12 +55,10 @@ const Toolbar = () => {
         <nav className="navbar navbar-expand-lg toolbar-gradient border-bottom">
             <img src="/src/assets/nu_bulldogs_logo-removebg-preview 3.png" alt="Logo" className="logo" />
 
-            {/* Center section: Dynamic Dashboard text */}
             <div className="navbar-text">
                 {dashboardText}
             </div>
 
-            {/* Right section: Notification, profile and bulldog icon */}
             <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
                 <li className="nav-item">
                     <IconButton className="message-inbox" color="inherit">
@@ -71,7 +69,7 @@ const Toolbar = () => {
                     <Avatar className="avatar">
                         <img src="/src/assets/Male User.png" alt="Profile Icon" className="profile-image" />
                     </Avatar>
-                    <span className="username">user_student</span>
+                    <span className="username">user</span>
                     <IconButton onClick={handleClick} color="inherit">
                         <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
                     </IconButton>
