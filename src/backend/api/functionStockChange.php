@@ -16,14 +16,34 @@ function error422($message)
 
 // Function to handle stock change creation
 function createStockChange($change_id, $item_id, $user_id, $quantity_before, $quantity_added, $quantity_subtracted, $quantity_current, $note) {
-   include('dbConnection.php');
+   global $conn;  // Use the global connection
 
+   // Prepare the SQL query to prevent SQL injection
    $query = "INSERT INTO `tbl_stock_change` 
-       (`change_id`, `item_id`, `user_id`, `quantity_before`, `quantity_added`, `quantity_subtracted`, `quantity_current`, `note`, `created_at`) 
-       VALUES 
-       ('$change_id', '$item_id', '$user_id', '$quantity_before', '$quantity_added', '$quantity_subtracted', '$quantity_current', '$note', current_timestamp())";
+             (`change_id`, `item_id`, `user_id`, `quantity_before`, `quantity_added`, `quantity_subtracted`, `quantity_current`, `note`, `created_at`) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-   if (mysqli_query($conn, $query)) {
+   $stmt = $conn->prepare($query);
+   if (!$stmt) {
+       // Log detailed error information
+       $data = [
+           'status' => 500,
+           'message' => 'Failed to prepare statement',
+           'error' => $conn->error
+       ];
+       header("HTTP/1.1 500 Internal Server Error");
+       echo json_encode($data);
+       return;
+   }
+
+   // Generate the current timestamp for `created_at`
+   $created_at = date('Y-m-d H:i:s');
+
+   // Bind the parameters, including `created_at`
+   $stmt->bind_param('sssiiiiss', $change_id, $item_id, $user_id, $quantity_before, $quantity_added, $quantity_subtracted, $quantity_current, $note, $created_at);
+
+   // Execute the query
+   if ($stmt->execute()) {
        $data = [
            'status' => 201,
            'message' => 'Stock change created successfully',
@@ -34,15 +54,14 @@ function createStockChange($change_id, $item_id, $user_id, $quantity_before, $qu
        $data = [
            'status' => 500,
            'message' => 'Failed to create stock change',
-           'error' => mysqli_error($conn),
+           'error' => $stmt->error
        ];
        header("HTTP/1.1 500 Internal Server Error");
        echo json_encode($data);
    }
 
-   mysqli_close($conn);
+   $stmt->close();
 }
-
 
 // Function to get the latest stock change ID
 function getLatestStockChangeId()
@@ -101,3 +120,44 @@ function getAllStockChanges()
    return $stock_changes;
 }
 
+// Function to delete stock change by item ID
+function deleteStockChangeByItemId($item_id)
+{
+   global $conn;
+
+   $query = "DELETE FROM `tbl_stock_change` WHERE `item_id` = ?";
+   $stmt = $conn->prepare($query);
+   if (!$stmt) {
+       $data = [
+           'status' => 500,
+           'message' => 'Failed to prepare statement',
+           'error' => $conn->error
+       ];
+       header("HTTP/1.1 500 Internal Server Error");
+       echo json_encode($data);
+       return;
+   }
+
+   $stmt->bind_param("s", $item_id);
+
+   if ($stmt->execute()) {
+       $data = [
+           'status' => 200,
+           'message' => 'Stock change deleted successfully',
+       ];
+       header("HTTP/1.1 200 OK");
+       echo json_encode($data);
+   } else {
+       $data = [
+           'status' => 500,
+           'message' => 'Failed to delete stock change',
+           'error' => $stmt->error
+       ];
+       header("HTTP/1.1 500 Internal Server Error");
+       echo json_encode($data);
+   }
+
+   $stmt->close();
+}
+
+?>

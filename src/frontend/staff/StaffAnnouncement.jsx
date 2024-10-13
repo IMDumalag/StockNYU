@@ -53,32 +53,46 @@ const StaffAnnouncement = () => {
                   <div className="container mt-4">
                      <h1>Add Announcement</h1>
                      {message && <div className="alert alert-info">{message}</div>}
-                     <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                           <label htmlFor="announcementText">Announcement Text</label>
-                           <input
-                              type="text"
-                              className="form-control"
-                              id="announcementText"
-                              value={announcementText}
-                              onChange={(e) => setAnnouncementText(e.target.value)}
-                              required
-                           />
+                     <div className="row">
+                        <div className="col-md-6">
+                           <form onSubmit={handleSubmit}>
+                              <div className="form-group">
+                                 <label htmlFor="announcementText">Announcement Text</label>
+                                 <input
+                                    type="text"
+                                    className="form-control"
+                                    id="announcementText"
+                                    value={announcementText}
+                                    onChange={(e) => setAnnouncementText(e.target.value)}
+                                    required
+                                 />
+                              </div>
+                              <div className="form-group">
+                                 <label htmlFor="announcementImf">Announcement Image URL</label>
+                                 <input
+                                    type="text"
+                                    className="form-control"
+                                    id="announcementImf"
+                                    value={announcementImf}
+                                    onChange={(e) => setAnnouncementImf(e.target.value)}
+                                    required
+                                 />
+                              </div>
+                              <button type="submit" className="btn btn-primary">
+                                 Add Announcement
+                              </button>
+                           </form>
                         </div>
-                        <div className="form-group">
-                           <label htmlFor="announcementImf">Announcement IMF</label>
-                           <textarea
-                              className="form-control"
-                              id="announcementImf"
-                              value={announcementImf}
-                              onChange={(e) => setAnnouncementImf(e.target.value)}
-                              required
-                           ></textarea>
+                        <div className="col-md-6">
+                           <h2>Preview</h2>
+                           <div className="card">
+                              {announcementImf && <img src={announcementImf} className="card-img-top" alt="Announcement" />}
+                              <div className="card-body">
+                                 <h5 className="card-title">{announcementText}</h5>
+                              </div>
+                           </div>
                         </div>
-                        <button type="submit" className="btn btn-primary">
-                           Add Announcement
-                        </button>
-                     </form>
+                     </div>
                   </div>
                </div>
             </div>
