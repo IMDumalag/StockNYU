@@ -1,21 +1,32 @@
-// StaffSidebar.jsx
-
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './StaffSidebar.css'; 
+import { Link } from 'react-router-dom'; 
 
 const StaffSidebar = () => {
+  const [isOpen, setIsOpen] = useState(true); 
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen); 
+  };
+
   return (
-    <div className="bg-light border-right vh-100" id="sidebar-wrapper">
-      <div className="sidebar-heading">
-        <a href="/login/staff_dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</a>
+    <>
+      <button className="btn btn-primary" id="menu-toggle" onClick={toggleSidebar}>
+        ☰
+      </button>
+
+      <div className={`sidebar-wrapper ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+        <div className="custom-bg vh-100">
+          <div className="list-group list-group-flush">
+            <Link to="/login/user_dashboard" className="list-group-item list-group-item-action custom-text">Dashboard</Link>
+            <Link to="/login/user_viewstockinventory" className="list-group-item list-group-item-action custom-text">Stock Inventory</Link>
+            <Link to="/login/user_reservation" className="list-group-item list-group-item-action custom-text">Stock Reservation</Link>
+            <Link to="/login/user_faqs" className="list-group-item list-group-item-action custom-text">FAQ</Link>
+          </div>
+        </div>
       </div>
-      <div className="list-group list-group-flush">
-        <a href="/login/staff_inventorymanagement" className="list-group-item list-group-item-action bg-light">Stock Inventory</a>
-        <a href="/login/staff_stockhistory" className="list-group-item list-group-item-action bg-light">Stock History</a>
-        <a href="/login/staff_faqsandannouncement" className="list-group-item list-group-item-action bg-light">FAQs and Announcement</a>
-        <a href="#" className="list-group-item list-group-item-action bg-light">Analytics</a>
-      </div>
-    </div>
+    </>
   );
 };
 
