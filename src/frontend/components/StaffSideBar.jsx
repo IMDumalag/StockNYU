@@ -19,10 +19,13 @@ const StaffSidebar = () => {
       <div className={`sidebar-wrapper ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="custom-bg vh-100">
           <div className="list-group list-group-flush">
-            <Link to="/login/user_dashboard" className="list-group-item list-group-item-action custom-text">Dashboard</Link>
-            <Link to="/login/user_viewstockinventory" className="list-group-item list-group-item-action custom-text">Stock Inventory</Link>
-            <Link to="/login/user_reservation" className="list-group-item list-group-item-action custom-text">Stock Reservation</Link>
-            <Link to="/login/user_faqs" className="list-group-item list-group-item-action custom-text">FAQ</Link>
+
+            <Link to="/login/staff_dashboard" className="list-group-item list-group-item-action custom-text">Dashboard</Link>
+            <Link to="/login/staff_inventorymanagement" className="list-group-item list-group-item-action custom-text">Stock Inventory</Link>
+            <Link to="/login/staff_stockhistory" className="list-group-item list-group-item-action custom-text">Stock History</Link>
+            <Link to="/login/staff_faqsandannouncement" className="list-group-item list-group-item-action custom-text">FAQs and Announcement</Link>
+            <Link to="#" className="list-group-item list-group-item-action custom-text">Analytics</Link>
+            
           </div>
         </div>
       </div>
