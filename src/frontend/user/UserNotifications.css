@@ -1,0 +1,40 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Prevent the page itself from scrolling */
+}
+
+.notifications-container {
+  display: flex;
+  height: calc(100vh - 60px); /* Adjust height for the header */
+  padding: 20px;
+  margin-left: 250px; /* Adjust margin to account for the sidebar width */
+}
+
+.scrollable-column {
+  max-height: 100%; /* Adjust height to take full available height */
+  overflow-y: auto;
+  padding-right: 0; /* Remove padding to the right */
+  flex: 0 0 30%; /* Reduce the width to 30% */
+  margin-right: 0; /* Remove any margin to the right */
+}
+
+.main-content {
+  padding: 0; /* Remove padding */
+  flex: 1 1 70%; /* Increase the width to 70% */
+  height: 88%; /* Ensure it takes the full available height */
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-left: 80px; /* Add margin to the left to increase spacing */
+  margin-right: 40px;
+}
+
+.selected-notification, .placeholder {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  flex-grow: 1; /* Ensure it takes the full available height */
+  overflow-y: auto; /* Add overflow to handle content overflow */
+}
