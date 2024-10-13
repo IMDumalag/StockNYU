@@ -71,7 +71,7 @@ const Toolbar = () => {
                     <Avatar className="avatar">
                         <img src="/src/assets/Male User.png" alt="Profile Icon" className="profile-image" />
                     </Avatar>
-                    <span className="username">user_student</span>
+                    <span className="username">user</span>
                     <IconButton onClick={handleClick} color="inherit">
                         <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
                     </IconButton>

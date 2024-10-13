@@ -3,15 +3,16 @@
    border: none;
    font-size: 24px;
    cursor: pointer;
-   transition: color 0.3s ease; /* Smooth transition of color */
+   font-weight: 700;
+   transition: color 0.3s ease; 
 }
 
 .hamburger-open {
-   color: white; /* Color when sidebar is open */
+   color: white; 
 }
 
 .hamburger-closed {
-   color: black; /* Color when sidebar is closed */
+   color: black; 
 }
 
 .sidebar-wrapper {
@@ -27,9 +28,9 @@
 }
 
 .sidebar-open {
-   transform: translateX(0); /* Sidebar fully visible */
+   transform: translateX(0); 
 }
 
 .sidebar-closed {
-   transform: translateX(-250px); /* Sidebar completely hidden */
+   transform: translateX(-250px); 
 }
