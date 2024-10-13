@@ -22,13 +22,13 @@ const StaffDashboard = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid" style={{ paddingTop: '100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
                </div>
                <div className="col-md-9">
-                  <div className="container mt-4">
+                  <div className="container mt-4" style={{ marginLeft: '-200px'}}>
                      <h1>Welcome {userData.f_name} {userData.l_name}</h1>
                   </div>
                </div>

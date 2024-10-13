@@ -27,6 +27,8 @@ const StaffInventoryManagement = () => {
    const [quantityToAdd, setQuantityToAdd] = useState(0);
    const [selectedItem, setSelectedItem] = useState(null);
 
+   const [searchTerm, setSearchTerm] = useState(""); // Add search state
+
    const handleOpenAddQuantityModal = (item) => {
       setSelectedItem(item);
       setShowAddQuantityModal(true);
@@ -328,7 +330,14 @@ const handleDelete = async (id) => {
       setCurrentPage(pageNumber);
    };
 
-   const currentItems = items.slice(
+   // Filter items based on the search term
+   const filteredItems = items.filter(
+      (item) =>
+         item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         item.description.toLowerCase().includes(searchTerm.toLowerCase())
+   );
+
+   const currentItems = filteredItems.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
    );
@@ -338,46 +347,16 @@ const handleDelete = async (id) => {
       window.open('https://postimages.org', 'popupWindow', 'width=800,height=900,scrollbars=yes,resizable=no');
    };
 
-   // Handle add quantity
-   const handleAddQuantity = async (item) => {
-      const quantityToAdd = prompt("Enter quantity to add:");
-      if (quantityToAdd && !isNaN(quantityToAdd) && quantityToAdd > 0) {
-         const newQuantity = parseInt(item.quantity) + parseInt(quantityToAdd);
-         const updatedItem = { ...item, quantity: newQuantity };
-
-         try {
-            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
-            if (response.data.status === 200) {
-               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
-               setItems(updatedItems);
-
-               const changeData = {
-                  change_id: await generateNextStockChangeId(),
-                  item_id: updatedItem.item_id,
-                  user_id: userId,
-                  quantity_before: item.quantity,
-                  quantity_added: quantityToAdd,
-                  quantity_subtracted: 0,
-                  quantity_current: newQuantity,
-                  note: "Quantity added",
-                  created_at: new Date().toISOString(),
-               };
-               sendStockChange(changeData);
-            } else {
-               console.error("Error updating item", response.data.message);
-            }
-         } catch (error) {
-            console.error("Error updating item", error);
-         }
-      } else {
-         alert("Invalid quantity entered.");
-      }
-   };
+     // Handle search input change
+   const handleSearchChange = (e) => {
+         setSearchTerm(e.target.value);
+      };
 
    return (
       <>
+      <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid" style={{ paddingTop: '100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
@@ -385,6 +364,14 @@ const handleDelete = async (id) => {
                <div className="col-md-9">
                   <div className="container mt-5">
                      <h2 className="mb-4">Inventory Management</h2>
+
+                     <input
+                        type="text"
+                        className="form-control mb-4"
+                        placeholder="Search by item name or description"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                     />
 
                      <Button variant="primary" onClick={handleAddItem}>
                         Add Item
@@ -444,13 +431,59 @@ const handleDelete = async (id) => {
 
                      <nav className="d-flex justify-content-center mt-4">
                         <ul className="pagination">
-                           {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
-                              <li key={index + 1} className="page-item">
-                                 <button onClick={() => paginate(index + 1)} className="page-link">
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginate(1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 First
+                              </button>
+                           </li>
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginate(currentPage - 1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 Previous
+                              </button>
+                           </li>
+
+                           {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, index) => (
+                              <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                                 <button
+                                    onClick={() => paginate(index + 1)}
+                                    className="page-link"
+                                    disabled={currentPage === index + 1}
+                                 >
                                     {index + 1}
                                  </button>
                               </li>
                            ))}
+
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginate(currentPage + 1)}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                              >
+                                 Next
+                              </button>
+                           </li>
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginate(Math.ceil(filteredItems.length / itemsPerPage))}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                              >
+                                 Last
+                              </button>
+                           </li>
                         </ul>
                      </nav>
 
@@ -587,6 +620,7 @@ const handleDelete = async (id) => {
                   </div>
                </div>
             </div>
+         </div>
          </div>
       </>
    );

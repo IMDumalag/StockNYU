@@ -18,26 +18,30 @@ function error422($message)
 function createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at)
 {
     global $conn;
-
-    $query = "INSERT INTO `tbl_reservations` (`reservation_id`, `user_id`, `item_id`, `reservation_date_start`, `reservation_date_end`, `quantity_reserved`, `status`, `created_at`) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
+    
+    $query = "INSERT INTO tbl_reservations (reservation_id, user_id, item_id, reservation_date_start, reservation_date_end, quantity_reserved, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssssidss", $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at);
+    
+    if ($stmt === false) {
+        error422('Prepare failed: ' . $conn->error);
+    }
 
+    // Binding the parameters
+    $stmt->bind_param('sssssdss', $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at);
+    
     if ($stmt->execute()) {
         $data = [
             'status' => 201,
             'message' => 'Reservation created successfully',
         ];
-        header("HTTP/1.1 201 Created");
         echo json_encode($data);
     } else {
-        error422('Failed to create reservation');
+        error422('Execution failed: ' . $stmt->error);
     }
 
     $stmt->close();
 }
+
 
 // Function to get the latest reservation ID
 function getLatestReservationId()
