@@ -44,7 +44,8 @@ const Toolbar = () => {
       </button>
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
+        {/* Add ml-auto or ms-auto to push the items to the right */}
+        <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
           <li className="nav-item">
             <a className="nav-link" href="#">Message Inbox</a>
           </li>
