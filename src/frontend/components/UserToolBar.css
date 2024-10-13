@@ -4,8 +4,19 @@
    align-items: center;
    justify-content: space-between;
    padding: 0 20px;
+   height: 80px; 
+   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* Adding a shadow to the entire navbar */
 }
 
+.logo-container {
+   background-color: #fff; /* White background for the left side of the navbar */
+   width: 130px; /* Adjust the width based on how much of the navbar you want white */
+   padding: 1px; /* Add some padding */
+   box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1); /* Drop shadow effect */
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
 .message-inbox {
    width: 35px; /* Increased bell icon size */
    height: 40px;
@@ -32,9 +43,9 @@
 .avatar {
    display: flex;
    align-items: center;
-   width: 45px; /* Increased profile icon size */
-   height: 45px;
-   border: 2px solid #001E4F; /* Added border for a professional look */
+   width: 60px; /* Increased profile icon size */
+   height: 60px;
+   /* Removed border for a professional look */
 }
 
 .username {
@@ -43,7 +54,7 @@
    font-style: normal;
    font-weight: 600;
    line-height: normal;
-   margin-left: 3px; /* Adjusted spacing between profile icon and username */
+   margin-left: 10px; /* Adjusted spacing between profile icon and username */
 }
 
 .dropdown-arrow {
@@ -58,11 +69,50 @@ ul.navbar-nav {
    display: flex;
    align-items: center;
    justify-content: flex-end;
-   gap: 4px; /* Adjust spacing between icons */
+   gap: 6px; /* Adjust spacing between icons */
 }
 
 .user-profile .username:hover,
 .user-profile .avatar:hover {
    background-color: transparent; /* Remove background color on hover */
    cursor: pointer; /* Optionally, you can add a pointer cursor on hover */
+}
+
+.navbar-text {
+   color: #EEE; /* Lighter text color */
+   text-shadow: 0px 4px 4px #866C0B;
+   -webkit-text-stroke-width: 0.9px;
+   -webkit-text-stroke-color: var(--Schemes-Scrim, #000);
+   font-size: 40px;
+   font-style: normal;
+   font-weight: 800;
+   line-height: 34px; /* 85% */
+   letter-spacing: 3.2px;
+   position: relative;
+   z-index: 1; /* Ensure the text is above the background image */
+   margin-left: 110px; /* Move the text to the right */
+   margin-top: -5px; /* Move the text a bit higher */
+}
+
+.bulldog-logo {
+   height: 80px; 
+   margin-right: 20px; /* Spacing for the bulldog image */
+   position: absolute;
+   right: 900px; /* Align the bulldog logo to the right from username*/
+   opacity: 0.8; /* Adjust transparency to blend the bulldog icon */
+   background-color: rgba(255, 255, 255, 0); /* Light transparent background to blend with the yellow */
+   mix-blend-mode: multiply; /* Blend the logo with the background */
+   
+}
+
+.logo {
+   margin-left: 20px; /* Spacing for logo */
+   right: 4px;
+   margin-top: 0px;
+   margin-bottom: -5px;
+   background-size: 50px 50px; /* Adjust the size of the logo */
+}
+
+.navbar-expand-lg {
+   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
 }
