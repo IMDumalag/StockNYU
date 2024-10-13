@@ -1,0 +1,124 @@
+.toolbar-gradient {
+    background: linear-gradient(270deg, #FFFEF9 0.81%, #F8D34E 62.6%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 80px; 
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    position: fixed; /* Make the toolbar fixed */
+    top: 0; /* Position it at the top */
+    left: 0; /* Align it to the left */
+    right: 0; /* Stretch it to the right */
+    z-index: 1000; /* Toolbar's z-index */
+ }
+ 
+ .logo-container {
+    background-color: #fff; /* White background for the left side of the navbar */
+    width: 130px; /* Adjust the width based on how much of the navbar you want white */
+    padding: 1px; /* Add some padding */
+    box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1); /* Drop shadow effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ }
+ .message-inbox {
+    width: 35px; /* Increased bell icon size */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 70px;
+ }
+ 
+ .message-inbox .MuiSvgIcon-root {
+    font-size: 35px !important; /* Increased bell icon size */
+    color: #001E4F;  /* Bell icon color */
+ }
+ 
+ .nav-item {
+    display: flex;
+    align-items: center;
+ }
+ 
+ .nav-item.user-profile {
+    margin-right: 20px; /* Adjust spacing on the right of the profile avatar */
+    filter: brightness(1.3);
+ }
+ 
+ .avatar {
+    display: flex;
+    align-items: center;
+    width: 60px; 
+    height: 60px;
+   
+ }
+ 
+ .username {
+    color: var(--Color, #001840);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-left: 10px; 
+ }
+ 
+ .dropdown-arrow {
+    margin-left: 5px;
+    width: 16px; /* Size of the dropdown arrow */
+    height: auto;
+    color: rgba(0, 30, 79, 0.9); /* Darker dropdown arrow */
+    cursor: pointer;
+ }
+ 
+ ul.navbar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px; /* Adjust spacing between icons */
+ }
+ 
+ .user-profile .username:hover,
+ .user-profile .avatar:hover {
+    background-color: transparent; /* Remove background color on hover */
+    cursor: pointer; /* Optionally, you can add a pointer cursor on hover */
+ }
+ 
+ .navbar-text {
+    color: #EEE; /* Lighter text color */
+    text-shadow: 0px 4px 4px #866C0B;
+    -webkit-text-stroke-width: 0.9px;
+    -webkit-text-stroke-color: var(--Schemes-Scrim, #000);
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 34px; /* 85% */
+    letter-spacing: 3.2px;
+    position: relative;
+    z-index: 1; /* Ensure the text is above the background image */
+    margin-left: 110px; /* Move the text to the right */
+    margin-top: -5px; /* Move the text a bit higher */
+ }
+ 
+ .bulldog-logo {
+    height: 80px; 
+    margin-right: 20px; /* Spacing for the bulldog image */
+    position: absolute;
+    right: 900px; /* Align the bulldog logo to the right from username*/
+    opacity: 0.8; /* Adjust transparency to blend the bulldog icon */
+    background-color: rgba(255, 255, 255, 0); 
+    mix-blend-mode: multiply; 
+    
+ }
+ 
+ .logo {
+    margin-left: 20px; 
+    right: 4px;
+    margin-top: 0px;
+    margin-bottom: -5px;
+    background-size: 50px 50px; 
+ }
+ 
+ .navbar-expand-lg {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+ }

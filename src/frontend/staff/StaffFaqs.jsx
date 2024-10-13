@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
 import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
+import './styles.css'
 
 const StaffFaqs = () => {
    const [question, setQuestion] = useState('');
@@ -44,7 +45,7 @@ const StaffFaqs = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid custom-margin-top-3">
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />

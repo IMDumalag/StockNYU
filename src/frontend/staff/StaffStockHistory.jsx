@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
+import './StaffStockHistory.css';
 
 const StaffStockHistory = () => {
    const [stockChanges, setStockChanges] = useState([]);
@@ -44,7 +45,7 @@ const StaffStockHistory = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid custom-margin-top">
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />

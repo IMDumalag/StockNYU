@@ -5,6 +5,7 @@ import { Modal, Button } from "react-bootstrap";
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
 import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
+import './styles.css'
 
 const StaffInventoryManagement = () => {
    const [items, setItems] = useState([]);
@@ -377,7 +378,7 @@ const handleDelete = async (id) => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid custom-margin-top-1">
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />

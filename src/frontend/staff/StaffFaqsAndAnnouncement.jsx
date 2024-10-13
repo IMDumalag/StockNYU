@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
 import { Button } from 'react-bootstrap';
+import './styles.css';
 
 const StaffFaqsAndAnnouncement = () => {
    const navigate = useNavigate();
@@ -18,7 +19,7 @@ const StaffFaqsAndAnnouncement = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid custom-margin-top-2">
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
