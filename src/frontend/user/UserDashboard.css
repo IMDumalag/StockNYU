@@ -1,0 +1,109 @@
+      .dashboard-container {   
+         display: flex;   
+         height: 100vh;   
+         background: linear-gradient(180deg, #FFFEFB 1%, #000f29 100%);   
+         min-height: 100vh;   
+         padding-top: 20px; /* Add padding to move content up */ 
+      }
+
+      .content-wrapper {   
+         flex-grow: 1;   
+         padding: 30px;   
+         display: flex;   
+         flex-direction: column;   
+         align-items: center;   
+         justify-content: center; 
+      }
+
+      .welcome-text {   
+         color: #FFFFFF;   
+         margin-bottom: 30px;   
+         font-weight: 200; 
+      }
+
+      .highlighted-text {   
+         font-weight: 750; /* More bold */   
+         color: #F8D34E;   
+         text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+      }
+
+      .dashboard-cards {   
+         display: flex;   
+         justify-content: space-around;   
+         width: 100%;   
+         max-width: 1200px;
+         margin-right: 5px !important; 
+         margin-left: 20px !important;
+      }
+
+      .dashboard-card {   
+         width: 344px;   
+         height: 369px;   
+         border-radius: 5px;   
+         background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
+         box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
+         display: flex;   
+         flex-direction: column;   
+         align-items: center;   
+         justify-content: center;   
+         cursor: pointer;   
+         transition: transform 0.2s ease-in-out;   
+         text-align: center;   
+         padding: 20px; 
+      }
+
+      .dashboard-card:hover {   
+         transform: translateY(-5px); 
+      }
+
+      .card {   
+         width: 400px;  /* Increase the width */   
+         height: 450px; /* Increase the height */   
+         flex-shrink: 0;   
+         border-radius: 5px;   
+         background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
+         box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
+         display: flex;   
+         flex-direction: column;   
+         justify-content: center;   
+         align-items: center;   
+         cursor: pointer;   
+         transition: transform 0.2s ease-in-out; 
+      }
+
+      .card:hover {   
+         transform: scale(1.05);  /* Add hover effect to scale up the card slightly */ 
+      }
+
+      .card img {   
+         width: 150px;  /* Increase icon size */   
+         height: 150px;   
+         margin-bottom: 20px; 
+      }
+
+      .card h5 {   
+         font-size: 1.6rem; /* Increase title size */   
+         font-weight: bold; 
+      }
+
+      .card p {   
+         font-size: 1.2rem; 
+      }
+
+      .card-title {   
+         font-size: 1.28rem;   
+         font-weight: bold;   
+         margin-bottom: 10px; 
+      }
+
+      .card-text {   
+         font-size: 1rem;   
+         color: #333; 
+      }
+
+      .card-container {   
+         display: flex;   
+         gap: 20px; /* Add spacing between cards */   
+         justify-content: center;   
+         flex-wrap: wrap; 
+      }

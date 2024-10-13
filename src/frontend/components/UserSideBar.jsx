@@ -21,11 +21,21 @@ const UserSidebar = () => {
       </button>
 
       <div className={`sidebar-wrapper ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+      <br></br>
         <div className="custom-bg vh-100">
           <div className="list-group list-group-flush">
             <Link to="/login/user_dashboard" className="list-group-item list-group-item-action custom-text">Dashboard</Link>
+
+            <hr className="menu-divider" />
+
             <Link to="/login/user_viewstockinventory" className="list-group-item list-group-item-action custom-text">Stock Inventory</Link>
+
+            <hr className="menu-divider" />
+
             <Link to="/login/user_reservation" className="list-group-item list-group-item-action custom-text">Stock Reservation</Link>
+
+            <hr className="menu-divider" />
+
             <Link to="/login/user_faqs" className="list-group-item list-group-item-action custom-text">FAQ</Link>
           </div>
         </div>
