@@ -30,6 +30,9 @@ const Toolbar = () => {
             case '/login/user_faqs':
                 setDashboardText('FAQ');
                 break;
+                case '/login/user_notifications':
+            setDashboardText('NOTIFICATIONS');
+                break;
             default:
                 setDashboardText('DASHBOARD'); // Default text
                 break;
