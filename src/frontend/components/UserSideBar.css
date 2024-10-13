@@ -1,3 +1,19 @@
+#menu-toggle {
+   background-color: transparent;
+   border: none;
+   font-size: 24px;
+   cursor: pointer;
+   transition: color 0.3s ease; /* Smooth transition of color */
+}
+
+.hamburger-open {
+   color: white; /* Color when sidebar is open */
+}
+
+.hamburger-closed {
+   color: black; /* Color when sidebar is closed */
+}
+
 .sidebar-wrapper {
    width: 250px;
    position: fixed;
@@ -16,62 +32,4 @@
 
 .sidebar-closed {
    transform: translateX(-250px); /* Sidebar completely hidden */
-}
-
-#menu-toggle {
-   position: fixed;
-   top: 15px;
-   left: 15px;
-   z-index: 1100; /* Ensure the button stays on top */
-   background-color: transparent;
-   border: none;
-   font-size: 20px;
-   cursor: pointer;
-}
-
-.list-group-item {
-   color: white; /* Text color */
-   background-color: transparent; 
-   padding: 15px; 
-   border: none; 
-   margin-left: 15px;
-   font-weight: 400 !important;
-   position: relative; /* Needed for the dropdown */
-}
-
-.list-group-item:hover {
-   color: #ccc;
-   background-color: rgba(255, 255, 255, 0.588);  /* Ensures hover effect stays within the blue nav drawer */
-   border-radius: 5px;
-}
-
-button:focus {
-   outline: none;
-}
-
-.dropdown-content {
-   display: none;
-   position: absolute;
-   left: calc(100% - 20px); /* Move slightly to the left */
-   top: 0;
-   background-color: #001E4F;
-   min-width: 200px;
-   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-   z-index: 1;
-}
-
-.list-group-item:hover .dropdown-content {
-   display: block;
-}
-
-.dropdown-content .dropdown-item {
-   color: white;
-   padding: 12px 16px;
-   text-decoration: none;
-   display: block;
-}
-
-.dropdown-content .dropdown-item:hover {
-   background-color: rgba(255, 255, 255, 0.588);
-   border-radius: 5px;
 }

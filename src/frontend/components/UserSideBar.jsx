@@ -12,7 +12,11 @@ const UserSidebar = () => {
 
   return (
     <>
-      <button className="btn btn-primary" id="menu-toggle" onClick={toggleSidebar}>
+      <button 
+        className={`btn ${isOpen ? 'hamburger-open' : 'hamburger-closed'}`} 
+        id="menu-toggle" 
+        onClick={toggleSidebar}
+      >
         ☰
       </button>
 

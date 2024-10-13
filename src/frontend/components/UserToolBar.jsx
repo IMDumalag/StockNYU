@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Menu, MenuItem, IconButton, Avatar } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import PersonIcon from '@mui/icons-material/Person'; // Using PersonIcon for a clearer profile icon
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import globalVariable from '/src/backend/data/GlobalVariable';
 import './UserToolbar.css';
 
@@ -11,6 +10,31 @@ const Toolbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
+    const location = useLocation(); // Get current route
+
+    // State to hold the dashboard text
+    const [dashboardText, setDashboardText] = useState('DASHBOARD');
+
+    // Effect to update dashboard text based on current route
+    useEffect(() => {
+        switch (location.pathname) {
+            case '/login/user_dashboard':
+                setDashboardText('DASHBOARD');
+                break;
+            case '/login/user_viewstockinventory':
+                setDashboardText('STOCK INVENTORY');
+                break;
+            case '/login/user_reservation':
+                setDashboardText('STOCK RESERVATION');
+                break;
+            case '/login/user_faqs':
+                setDashboardText('FAQ');
+                break;
+            default:
+                setDashboardText('DASHBOARD'); // Default text
+                break;
+        }
+    }, [location.pathname]); // Run effect when pathname changes
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -21,64 +45,56 @@ const Toolbar = () => {
     };
 
     const handleLogout = () => {
-        // Clear global variable user data
         globalVariable.setUserData({});
         globalVariable.setCurrentItem({});
-        // Redirect to Home page
         navigate('/home');
         setAnchorEl(null);
     };
 
     return (
         <nav className="navbar navbar-expand-lg toolbar-gradient border-bottom">
-            <button
-                className="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
-                    {/* Bell icon */}
-                    <li className="nav-item">
-                        <IconButton className="message-inbox" color="inherit">
-                            <NotificationsIcon />
-                        </IconButton>
-                    </li>
-                    <li className="nav-item user-profile">
-                        <IconButton color="inherit" className="profile-icon">
-                            <Avatar>
-                                <PersonIcon /> 
-                            </Avatar>
-                        </IconButton>
-                        <span className="username">user_student</span>
-                        <IconButton onClick={handleClick} color="inherit">
-                            <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" /> 
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                        >
-                            <MenuItem onClick={handleClose}>Profile</MenuItem>
-                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                        </Menu>
-                    </li>
-                </ul>
+            <img src="/src/assets/nu_bulldogs_logo-removebg-preview 3.png" alt="Logo" className="logo" />
+
+            {/* Center section: Dynamic Dashboard text */}
+            <div className="navbar-text">
+                {dashboardText}
             </div>
+
+            {/* Right section: Notification, profile and bulldog icon */}
+            <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
+                <li className="nav-item">
+                    <IconButton className="message-inbox" color="inherit">
+                        <NotificationsIcon />
+                    </IconButton>
+                </li>
+                <li className="nav-item user-profile">
+                    <Avatar className="avatar">
+                        <img src="/src/assets/Male User.png" alt="Profile Icon" className="profile-image" />
+                    </Avatar>
+                    <span className="username">user_student</span>
+                    <IconButton onClick={handleClick} color="inherit">
+                        <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                    </Menu>
+                </li>
+            </ul>
+
+            <img src="/src/assets/bulldog icon.png" alt="Bulldog Logo" className="bulldog-logo" />
         </nav>
     );
 };
