@@ -14,11 +14,13 @@ import StaffDashboard from './frontend/staff/StaffDashboard';
 import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 import UserReservation from './frontend/user/UserReservation';
 import UserFAQs from './frontend/user/UserFAQs';
+import UserNotifications from './frontend/user/UserNotifications';
 import StaffInventoryManagement from './frontend/staff/StaffInventoryManagement';
 import StaffStockHistory from './frontend/staff/StaffStockHistory';
 import StaffFaqsAndAnnouncement from './frontend/staff/StaffFaqsAndAnnouncement';
 import StaffFaqs from './frontend/staff/StaffFaqs';
 import StaffAnnouncement from './frontend/staff/StaffAnnouncement';
+
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
         <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
         <Route path="/login/user_reservation" element={<UserReservation />} />
         <Route path="/login/user_faqs" element={<UserFAQs />} />
+        <Route path="/login/user_notifications" element={<UserNotifications />} />
 
         {/* Routes Staff */}
         <Route path="/login/staff_dashboard" element={<StaffDashboard />} />

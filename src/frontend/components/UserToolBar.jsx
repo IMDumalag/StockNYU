@@ -51,6 +51,10 @@ const Toolbar = () => {
         setAnchorEl(null);
     };
 
+    const handleNotificationsClick = () => {
+        navigate('/login/user_notifications'); // Navigate to UserNotifications
+    };
+
     return (
         <nav className="navbar navbar-expand-lg toolbar-gradient border-bottom">
             <img src="/src/assets/nu_bulldogs_logo-removebg-preview 3.png" alt="Logo" className="logo" />
@@ -63,7 +67,7 @@ const Toolbar = () => {
             {/* Right section: Notification, profile and bulldog icon */}
             <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
                 <li className="nav-item">
-                    <IconButton className="message-inbox" color="inherit">
+                    <IconButton className="message-inbox" color="inherit" onClick={handleNotificationsClick}>
                         <NotificationsIcon />
                     </IconButton>
                 </li>
