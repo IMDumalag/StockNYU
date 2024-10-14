@@ -15,7 +15,7 @@ const UserViewStockInventory = () => {
   const itemsPerPage = 5;
 
   const [reservationDetails, setReservationDetails] = useState({
-    user_id: globalVariable.getUserData().user_id || '', // Set this to the logged-in user's ID
+    user_id: globalVariable.getUserData().user_id || '',
     item_id: '',
     reservation_date_start: '',
     reservation_date_end: '',
@@ -24,6 +24,7 @@ const UserViewStockInventory = () => {
     reservation_id: ''
   });
   const [selectedItem, setSelectedItem] = useState(null);
+  const [notificationPreferences, setNotificationPreferences] = useState({});
 
   // Fetch data from the backend
   const fetchData = async () => {
@@ -31,11 +32,40 @@ const UserViewStockInventory = () => {
       const response = await axios.get("http://localhost/stock-nyu/src/backend/api/ReadInventoryItems.php");
       if (response.data.status === 200) {
         setItems(response.data.data);
+        fetchNotificationPreferences(response.data.data);
       } else {
         console.error("Failed to fetch items");
       }
     } catch (error) {
       console.error("Error fetching data", error);
+    }
+  };
+
+  const fetchNotificationPreferences = async (items) => {
+    try {
+      const userId = globalVariable.getUserData().user_id;
+      const preferences = {};
+      for (const item of items) {
+        const response = await axios.get(`http://localhost/stock-nyu/src/backend/api/GetNotificationPreferences.php?user_id=${userId}&item_id=${item.item_id}`);
+        if (response.data.status === 200 && response.data.preferences.length > 0) {
+          preferences[item.item_id] = response.data.preferences[0].notify_on_restock;
+        } else {
+          // Create a new notification preference if none exists
+          const createResponse = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateNotificationPreferences.php", {
+            user_id: userId,
+            item_id: item.item_id,
+            notify_on_restock: false
+          });
+          if (createResponse.data.status === 201) {
+            preferences[item.item_id] = false;
+          } else {
+            console.error("Failed to create notification preference");
+          }
+        }
+      }
+      setNotificationPreferences(preferences);
+    } catch (error) {
+      console.error("Error fetching notification preferences", error);
     }
   };
 
@@ -133,7 +163,6 @@ const UserViewStockInventory = () => {
       const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateReservation.php", reservationData);
       if (response.data.status === 201) {
         alert("Reservation created successfully!");
-        await updateItemQuantity(reservationDetails.item_id, selectedItem.quantity - reservationDetails.quantity_reserved);
         setShowModal(false);
         fetchData(); // Refresh the items list
       } else {
@@ -151,7 +180,9 @@ const UserViewStockInventory = () => {
         item_id: itemId,
         quantity: newQuantity
       });
-      if (response.data.status !== 200) {
+      if (response.data.status === 200) {
+        console.log("Item quantity updated successfully");
+      } else {
         console.error("Failed to update item quantity");
       }
     } catch (error) {
@@ -187,23 +218,46 @@ const UserViewStockInventory = () => {
     }
   };
 
+  const handleCheckboxChange = async (itemId) => {
+    const userId = globalVariable.getUserData().user_id;
+    const newPreference = !notificationPreferences[itemId];
+
+    try {
+      const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateNotificationPreferences.php", {
+        user_id: userId,
+        item_id: itemId,
+        notify_on_restock: newPreference
+      });
+
+      if (response.data.status === 200) {
+        setNotificationPreferences({
+          ...notificationPreferences,
+          [itemId]: newPreference
+        });
+      } else {
+        console.error("Failed to update notification preference");
+      }
+    } catch (error) {
+      console.error("Error updating notification preference", error);
+    }
+  };
+
   return (
     <>
-    <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
       <Toolbar />
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-3">
             <Sidebar />
           </div>
-          <div className="col-md-9">
+          <div className="col-md-9" style={{marginLeft:"300px"}}>
             <div className="container mt-5 text-center">
               <h2 className="mb-4">Available Stocks</h2>
 
               <input
                 type="text"
                 className="form-control mb-4"
-                placeholder="Search by item name or description"
+                placeholder="Search items..."
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
@@ -211,11 +265,12 @@ const UserViewStockInventory = () => {
               <table className="table table-bordered mt-5">
                 <thead className="thead-dark">
                   <tr>
+                    <th>Notify on Restock</th>
                     <th>Item Name</th>
                     <th>Image</th>
                     <th>Description</th>
                     <th>Quantity</th>
-                    <th>Price (₱)</th>
+                    <th>Price</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -223,6 +278,13 @@ const UserViewStockInventory = () => {
                 <tbody>
                   {currentItems.map((item) => (
                     <tr key={item.item_id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={!!notificationPreferences[item.item_id]}
+                          onChange={() => handleCheckboxChange(item.item_id)}
+                        />
+                      </td>
                       <td>{item.item_name}</td>
                       <td>
                         <img
@@ -234,7 +296,7 @@ const UserViewStockInventory = () => {
                       </td>
                       <td>{item.description}</td>
                       <td>{item.quantity}</td>
-                      <td>₱{item.price}</td>
+                      <td>{item.price}</td>
                       <td>{item.status}</td>
                       <td>
                         <button
@@ -389,7 +451,6 @@ const UserViewStockInventory = () => {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './UserNotifications.css'; // Import the CSS file for Notifications
+import './UserNotifications.css'; // Custom CSS file
 import 'bootstrap/dist/css/bootstrap.min.css';
-import UserToolbar from '../components/UserToolbar'; // Import the UserToolbar component
-import UserSidebar from '../components/UserSidebar'; // Import the UserSidebar component
+import UserToolbar from '../components/UserToolbar';
+import UserSidebar from '../components/UserSidebar';
 
 const Notifications = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
@@ -10,7 +10,7 @@ const Notifications = () => {
   const notifications = [...Array(10)].map((_, index) => ({
     id: index + 1,
     title: `Notification ${index + 1}`,
-    content: `This is the content of notification ${index + 1}.`
+    content: `This is the content of notification ${index + 1}.`,
   }));
 
   const handleCardClick = (notification) => {
@@ -22,37 +22,43 @@ const Notifications = () => {
   };
 
   return (
-    <div>
-      <UserToolbar /> {/* Add the toolbar */}
-      <div className="d-flex">
-        <UserSidebar /> {/* Add the sidebar */}
-        <div className="notifications-container flex-grow-1">
-          <div className="scrollable-column">
-            {notifications.map((notification) => (
-              <div
-                className="card mb-3"
-                key={notification.id}
-                onClick={() => handleCardClick(notification)}
-                style={{ cursor: 'pointer', margin: 0 }} // Ensure no margin on cards
-              >
-                <div className="card-body">
-                  <h5 className="card-title">{notification.title}</h5>
-                  <p className="card-text">{notification.content}</p>
+    <>
+      <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
+        <UserToolbar /> {/* Toolbar */}
+        <div className="d-flex" style={{ paddingTop: '60px' }}>
+          <UserSidebar /> {/* Sidebar */}
+
+          <div className="notifications-container d-flex flex-grow-1">
+            {/* Notifications list column */}
+            <div className="notifications-list p-3" style={{ width: '30%', borderRight: '1px solid #ccc', overflowY: 'scroll', maxHeight: '80vh' }}>
+              {notifications.map((notification) => (
+                <div
+                  className={`notification-item p-2 mb-2 ${selectedNotification?.id === notification.id ? 'selected' : ''}`}
+                  key={notification.id}
+                  onClick={() => handleCardClick(notification)}
+                  style={{ cursor: 'pointer', borderBottom: '1px solid #eee' }}
+                >
+                  <h6 className="mb-1">{notification.title}</h6>
+                  <p className="small text-muted mb-0">{notification.content.substring(0, 30)}...</p>
                 </div>
-              </div>
-            ))}
-          </div>
-          {selectedNotification && (
-            <div className="main-content">
-              <div className="selected-notification">
-                <h1>{selectedNotification.title}</h1>
-                <p>{selectedNotification.content}</p>
-              </div>
+              ))}
             </div>
-          )}
+
+            {/* Selected notification details */}
+            <div className="notification-details p-4" style={{ width: '70%' }}>
+              {selectedNotification ? (
+                <>
+                  <h4>{selectedNotification.title}</h4>
+                  <p>{selectedNotification.content}</p>
+                </>
+              ) : (
+                <div className="text-muted">Select a notification to view details</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

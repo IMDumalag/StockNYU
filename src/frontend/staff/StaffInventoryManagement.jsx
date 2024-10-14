@@ -266,7 +266,7 @@ const StaffInventoryManagement = () => {
    };
    
 
- // Handle delete item
+// Handle delete item
 const handleDelete = async (id) => {
    try {
       // First, delete the stock change related to the item
@@ -275,19 +275,28 @@ const handleDelete = async (id) => {
       });
 
       if (deleteStockChangeResponse.data.status === 200) {
-         // If stock change deletion is successful, proceed to delete the item
-         const deleteItemResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
-         if (deleteItemResponse.data.status === 200) {
-            const filteredItems = items.filter((i) => i.item_id !== id);
-            setItems(filteredItems);
+         // If stock change deletion is successful, proceed to delete the notification preferences
+         const deleteNotificationResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteNotificationPreferences.php`, {
+            data: { item_id: id }
+         });
+
+         if (deleteNotificationResponse.data.status === 200) {
+            // If notification preferences deletion is successful, proceed to delete the item
+            const deleteItemResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
+            if (deleteItemResponse.data.status === 200) {
+               const filteredItems = items.filter((i) => i.item_id !== id);
+               setItems(filteredItems);
+            } else {
+               console.error("Error deleting item", deleteItemResponse.data.message);
+            }
          } else {
-            console.error("Error deleting item", deleteItemResponse.data.message);
+            console.error("Error deleting notification preferences", deleteNotificationResponse.data.message);
          }
       } else {
          console.error("Error deleting stock change", deleteStockChangeResponse.data.message);
       }
    } catch (error) {
-      console.error("Error deleting item or stock change", error);
+      console.error("Error deleting item, stock change, or notification preferences", error);
    }
 };
 

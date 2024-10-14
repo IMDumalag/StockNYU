@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Menu, MenuItem, IconButton, Avatar } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
 import globalVariable from '/src/backend/data/GlobalVariable';
 import './StaffToolbar.css'; // Make sure to create and import the CSS file
@@ -13,6 +12,7 @@ const StaffToolbar = () => {
   const location = useLocation();
 
   const [dashboardText, setDashboardText] = useState('DASHBOARD');
+  const [userData, setUserData] = useState(globalVariable.getUserData());
 
   useEffect(() => {
     switch (location.pathname) {
@@ -37,6 +37,18 @@ const StaffToolbar = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    const updateListener = () => {
+      setUserData(globalVariable.getUserData());
+    };
+
+    globalVariable.subscribe(updateListener);
+
+    return () => {
+      globalVariable.unsubscribe(updateListener);
+    };
+  }, []);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -51,8 +63,11 @@ const StaffToolbar = () => {
     navigate('/home');
     setAnchorEl(null);
   };
+ 
 
   return (
+    
+    <>
     <nav className="navbar navbar-expand-lg toolbar-gradient border-bottom">
       <img src="/src/assets/nu_bulldogs_logo-removebg-preview 3.png" alt="Logo" className="logo" />
 
@@ -62,10 +77,16 @@ const StaffToolbar = () => {
 
       <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
         <li className="nav-item user-profile">
-          <Avatar className="avatar">
-            <img src="/src/assets/Male User.png" alt="Profile Icon" className="profile-image" />
-          </Avatar>
-          <span className="username">staff</span>
+        <Avatar className="avatar">
+            <img 
+                src={userData.profile_picture} 
+                alt="Profile Icon" 
+                className="profile-image" 
+                style={{ width: '100%', height: '100%' }} 
+            />
+        </Avatar>
+
+          <span className="username">{userData.f_name} {userData.l_name}</span>
           <IconButton onClick={handleClick} color="inherit">
             <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
           </IconButton>
@@ -90,6 +111,7 @@ const StaffToolbar = () => {
 
       <img src="/src/assets/bulldog icon.png" alt="Bulldog Logo" className="bulldog-logo" />
     </nav>
+    </>
   );
 };
 
