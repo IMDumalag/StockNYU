@@ -284,6 +284,7 @@ function loginUser($userInput)
                     'user' => [
                         'user_id' => $user['user_id'],
                         'email' => $user['email'],
+                        'profile_picture' => $user['profile_picture'],
                         'access_id' => $user['access_id'],
                         'f_name' => $user['f_name'],
                         'l_name' => $user['l_name']
@@ -299,6 +300,5 @@ function loginUser($userInput)
         }
     }
 }
-
 
 ?>

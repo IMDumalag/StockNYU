@@ -15,6 +15,22 @@ const Toolbar = () => {
     // State to hold the dashboard text
     const [dashboardText, setDashboardText] = useState('DASHBOARD');
 
+    // State to hold the user's name
+    const [userName, setUserName] = useState('');
+    const [userData, setUserData] = useState(globalVariable.getUserData());
+
+    // Function to fetch user data from the backend
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch('/api/user/profile'); // Adjust the endpoint as needed
+            const data = await response.json();
+            if (data && data.f_name && data.l_name) {
+                setUserName(`${data.f_name} ${data.l_name}`);
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
 
     useEffect(() => {
         switch (location.pathname) {
@@ -30,14 +46,26 @@ const Toolbar = () => {
             case '/login/user_faqs':
                 setDashboardText('FAQ');
                 break;
-                case '/login/user_notifications':
-            setDashboardText('NOTIFICATIONS');
+            case '/login/user_notifications':
+                setDashboardText('NOTIFICATIONS');
                 break;
             default:
                 setDashboardText('DASHBOARD'); // Default text
                 break;
         }
     }, [location.pathname]); // Run effect when pathname changes
+
+    useEffect(() => {
+        const updateListener = () => {
+          setUserData(globalVariable.getUserData());
+        };
+    
+        globalVariable.subscribe(updateListener);
+    
+        return () => {
+          globalVariable.unsubscribe(updateListener);
+        };
+      }, []);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -73,10 +101,15 @@ const Toolbar = () => {
                     </IconButton>
                 </li>
                 <li className="nav-item user-profile">
-                    <Avatar className="avatar">
-                        <img src="/src/assets/Male User.png" alt="Profile Icon" className="profile-image" />
-                    </Avatar>
-                    <span className="username">user</span>
+                <Avatar className="avatar">
+                    <img 
+                        src={userData.profile_picture} 
+                        alt="Profile Icon" 
+                        className="profile-image" 
+                        style={{ width: '100%', height: '100%' }} 
+                    />
+                </Avatar>
+                    <span className="username">{userData.f_name} {userData.l_name}</span>
                     <IconButton onClick={handleClick} color="inherit">
                         <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
                     </IconButton>
