@@ -90,7 +90,7 @@ const StaffDashboard = () => {
                   <StaffSidebar />
                </div>
                <div className="col-md-9">
-                  <div className="container mt-4" style={{ marginLeft: '-200px'}}>
+                  <div className="container mt-4" style={{ marginLeft: '100px'}}>
                      <h1>Welcome {userData.fname} {userData.lname}</h1>
                      <div className="row mt-4">
                         <div className="col-md-6">
