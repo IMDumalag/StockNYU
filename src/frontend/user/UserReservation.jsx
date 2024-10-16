@@ -48,7 +48,8 @@ const UserReservation = () => {
                   return {
                      ...reservation,
                      item_name: item ? item.item_name : 'Unknown',
-                     item_image: item ? item.item_image : ''
+                     item_image: item ? item.item_image : '',
+                     total_price: item ? (item.price * reservation.quantity_reserved).toFixed(2) : '0.00' // Calculate total price
                   };
                });
             setReservations(reservationsWithDetails);
@@ -156,7 +157,7 @@ const UserReservation = () => {
                                        <td>{reservation.reservation_date_start}</td>
                                        <td>{reservation.reservation_date_end}</td>
                                        <td>{reservation.quantity_reserved}</td>
-                                       <td>${parseFloat(reservation.total_reservation_price).toFixed(2)}</td>
+                                       <td>${reservation.total_price}</td>
                                        <td>{reservation.status}</td>
                                        <td>
                                           {reservation.status !== 'cancelled' && (
@@ -173,19 +174,64 @@ const UserReservation = () => {
                               </tbody>
                            </table>
 
-                           {filteredReservations.length > reservationsPerPage && (
-                              <nav className="d-flex justify-content-center">
-                                 <ul className="pagination">
-                                    {Array.from({ length: Math.ceil(filteredReservations.length / reservationsPerPage) }, (_, index) => (
-                                       <li key={index + 1} className="page-item">
-                                          <button onClick={() => paginateReservations(index + 1)} className="page-link">
-                                             {index + 1}
-                                          </button>
-                                       </li>
-                                    ))}
-                                 </ul>
-                              </nav>
-                           )}
+                           {/* Pagination */}
+                           <nav className="d-flex justify-content-center mt-4">
+                              <ul className="pagination">
+                                 <li className={`page-item ${currentReservationPage === 1 ? "disabled" : ""}`}>
+                                    <button
+                                       onClick={() => paginateReservations(1)}
+                                       className="page-link"
+                                       disabled={currentReservationPage === 1}
+                                    >
+                                       First
+                                    </button>
+                                 </li>
+                                 <li className={`page-item ${currentReservationPage === 1 ? "disabled" : ""}`}>
+                                    <button
+                                       onClick={() => paginateReservations(currentReservationPage - 1)}
+                                       className="page-link"
+                                       disabled={currentReservationPage === 1}
+                                    >
+                                       Previous
+                                    </button>
+                                 </li>
+
+                                 {Array.from({ length: Math.ceil(filteredReservations.length / reservationsPerPage) }, (_, index) => (
+                                    <li key={index + 1} className={`page-item ${currentReservationPage === index + 1 ? "active" : ""}`}>
+                                       <button
+                                          onClick={() => paginateReservations(index + 1)}
+                                          className="page-link"
+                                          disabled={currentReservationPage === index + 1}
+                                       >
+                                          {index + 1}
+                                       </button>
+                                    </li>
+                                 ))}
+
+                                 <li
+                                    className={`page-item ${currentReservationPage === Math.ceil(filteredReservations.length / reservationsPerPage) ? "disabled" : ""}`}
+                                 >
+                                    <button
+                                       onClick={() => paginateReservations(currentReservationPage + 1)}
+                                       className="page-link"
+                                       disabled={currentReservationPage === Math.ceil(filteredReservations.length / reservationsPerPage)}
+                                    >
+                                       Next
+                                    </button>
+                                 </li>
+                                 <li
+                                    className={`page-item ${currentReservationPage === Math.ceil(filteredReservations.length / reservationsPerPage) ? "disabled" : ""}`}
+                                 >
+                                    <button
+                                       onClick={() => paginateReservations(Math.ceil(filteredReservations.length / reservationsPerPage))}
+                                       className="page-link"
+                                       disabled={currentReservationPage === Math.ceil(filteredReservations.length / reservationsPerPage)}
+                                    >
+                                       Last
+                                    </button>
+                                 </li>
+                              </ul>
+                           </nav>
                         </>
                      )}
                   </div>
@@ -197,18 +243,3 @@ const UserReservation = () => {
 };
 
 export default UserReservation;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

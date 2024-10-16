@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, TextField, Typography, Box, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Grid, List, ListItem, ListItemText } from '@mui/material';
 import UserSidebar from '../components/UserSidebar';
 import UserToolbar from '../components/UserToolbar';
 import './UserFAQs.css';
 
 const UserFAQs = () => {
-    const [faqs, setFaqs] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+   const [faqs, setFaqs] = useState([]);
+   const [searchTerm, setSearchTerm] = useState('');
+   const [currentPage, setCurrentPage] = useState(1);
+   const rowsPerPage = 5;
 
     useEffect(() => {
         fetchFaqs();
@@ -25,12 +27,21 @@ const UserFAQs = () => {
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
+        setCurrentPage(1); // Reset to first page on search
     };
 
+    const paginateFaqs = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Filter FAQs based on both the question and answer
     const filteredFaqs = faqs.filter(faq => {
         const regex = new RegExp(searchTerm, 'i'); // 'i' makes it case-insensitive
         return regex.test(faq.question) || regex.test(faq.answer);
     });
+
+    // Paginate FAQs
+    const paginatedFaqs = filteredFaqs.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     return (
         <>
@@ -57,69 +68,88 @@ const UserFAQs = () => {
                                     />
                                 </Box>
                             </Box>
-                            <Grid container spacing={3} className="faq-category-container">
-                                <Grid item xs={12} md={6}>
-                                    <Box className="faq-category">
-                                        <Typography variant="h5">Getting Started</Typography>
-                                        <List>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="How to use?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="How do I make reservation?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="What is StockNYU?" />
-                                            </ListItem>
-                                        </List>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Box className="faq-category">
-                                        <Typography variant="h5">Accept pending reservation</Typography>
-                                        <List>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="How do I know if my order is confirmed?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="Can I cancel or modify my reservation?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="What happens if I don't receive a confirmation email?" />
-                                            </ListItem>
-                                        </List>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Box className="faq-category">
-                                        <Typography variant="h5">Accounts</Typography>
-                                        <List>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="Can I make a reservation without creating an account?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="How to create an account in StockNYU?" />
-                                            </ListItem>
-                                        </List>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Box className="faq-category">
-                                        <Typography variant="h5">Others</Typography>
-                                        <List>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="Where can I reserve my items?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="Adding item not working?" />
-                                            </ListItem>
-                                            <ListItem className="faq-list-item">
-                                                <ListItemText primary="Where can I discuss tips and techniques with others?" />
-                                            </ListItem>
-                                        </List>
-                                    </Box>
-                                </Grid>
-                            </Grid>
+
+                            <TableContainer component={Paper}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Question</TableCell>
+                                            <TableCell>Answer</TableCell>
+                                            <TableCell>Created By</TableCell>
+                                            <TableCell>Created Date</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {paginatedFaqs.map((faq) => (
+                                            <TableRow key={faq.faq_id}>
+                                                <TableCell>{faq.question}</TableCell>
+                                                <TableCell>{faq.answer}</TableCell>
+                                                <TableCell>{`${faq.f_name} ${faq.l_name}`}</TableCell>
+                                                <TableCell>{new Date(faq.created_date).toLocaleString()}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+
+                            {/* Pagination */}
+                            <nav className="d-flex justify-content-center mt-4">
+                                <ul className="pagination">
+                                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                        <button
+                                            onClick={() => paginateFaqs(1)}
+                                            className="page-link"
+                                            disabled={currentPage === 1}
+                                        >
+                                            First
+                                        </button>
+                                    </li>
+                                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                        <button
+                                            onClick={() => paginateFaqs(currentPage - 1)}
+                                            className="page-link"
+                                            disabled={currentPage === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                    </li>
+
+                                    {Array.from({ length: Math.ceil(filteredFaqs.length / rowsPerPage) }, (_, index) => (
+                                        <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                                            <button
+                                                onClick={() => paginateFaqs(index + 1)}
+                                                className="page-link"
+                                                disabled={currentPage === index + 1}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+
+                                    <li
+                                        className={`page-item ${currentPage === Math.ceil(filteredFaqs.length / rowsPerPage) ? "disabled" : ""}`}
+                                    >
+                                        <button
+                                            onClick={() => paginateFaqs(currentPage + 1)}
+                                            className="page-link"
+                                            disabled={currentPage === Math.ceil(filteredFaqs.length / rowsPerPage)}
+                                        >
+                                            Next
+                                        </button>
+                                    </li>
+                                    <li
+                                        className={`page-item ${currentPage === Math.ceil(filteredFaqs.length / rowsPerPage) ? "disabled" : ""}`}
+                                    >
+                                        <button
+                                            onClick={() => paginateFaqs(Math.ceil(filteredFaqs.length / rowsPerPage))}
+                                            className="page-link"
+                                            disabled={currentPage === Math.ceil(filteredFaqs.length / rowsPerPage)}
+                                        >
+                                            Last
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
                         </Container>
                     </div>
                 </div>

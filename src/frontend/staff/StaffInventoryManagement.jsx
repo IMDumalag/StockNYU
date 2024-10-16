@@ -15,13 +15,64 @@ const StaffInventoryManagement = () => {
       description: "",
       quantity: "",
       price: "",
-      reservation_price_perday: "",
       status: "Available",
    });
    const [editMode, setEditMode] = useState(false);
    const [showModal, setShowModal] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
    const itemsPerPage = 5;
+   const [previousQuantity, setPreviousQuantity] = useState(0); // State to store previous quantity
+
+   const [showAddQuantityModal, setShowAddQuantityModal] = useState(false);
+   const [quantityToAdd, setQuantityToAdd] = useState(0);
+   const [selectedItem, setSelectedItem] = useState(null);
+
+   const [searchTerm, setSearchTerm] = useState(""); // Add search state
+
+   const handleOpenAddQuantityModal = (item) => {
+      setSelectedItem(item);
+      setShowAddQuantityModal(true);
+   };
+
+   const handleCloseAddQuantityModal = () => {
+      setShowAddQuantityModal(false);
+      setQuantityToAdd(0);
+   };
+
+   const handleAddQuantitySubmit = async () => {
+      if (quantityToAdd && !isNaN(quantityToAdd) && quantityToAdd > 0) {
+         const newQuantity = parseInt(selectedItem.quantity) + parseInt(quantityToAdd);
+         const updatedItem = { ...selectedItem, quantity: newQuantity };
+
+         try {
+            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
+            if (response.data.status === 200) {
+               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
+               setItems(updatedItems);
+
+               const changeData = {
+                  change_id: await generateNextStockChangeId(),
+                  item_id: updatedItem.item_id,
+                  user_id: userId,
+                  quantity_before: selectedItem.quantity,
+                  quantity_added: quantityToAdd,
+                  quantity_subtracted: 0,
+                  quantity_current: newQuantity,
+                  note: "Quantity added",
+                  created_at: new Date().toISOString(),
+               };
+               sendStockChange(changeData);
+               handleCloseAddQuantityModal();
+            } else {
+               console.error("Error updating item", response.data.message);
+            }
+         } catch (error) {
+            console.error("Error updating item", error);
+         }
+      } else {
+         alert("Invalid quantity entered.");
+      }
+   };
 
    // Get user data from global variable
    const userData = globalVariable.getUserData();
@@ -138,25 +189,34 @@ const StaffInventoryManagement = () => {
    // Handle form submission
    const handleFormSubmit = async (e) => {
       e.preventDefault();
-      
-      console.log("Payload being sent:", item); // Verify that `item.status` has the correct value
+   
+      // Automatically update status based on the quantity
+      const updatedStatus = item.quantity <= 0 ? "Out of Stock" : "Available";
+      const updatedItem = { ...item, status: updatedStatus };
+   
+      console.log("Payload being sent:", updatedItem); // Verify the updated item with correct status
       
       if (editMode) {
          try {
-            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", item);
+            const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateInventoryItems.php", updatedItem);
             if (response.data.status === 200) {
-               const updatedItems = items.map((i) => (i.item_id === item.item_id ? item : i));
+               const updatedItems = items.map((i) => (i.item_id === updatedItem.item_id ? updatedItem : i));
                setItems(updatedItems);
                setEditMode(false);
                setShowModal(false);
-
-               // Send stock change data
+   
+               const quantityAdded = Math.max(0, updatedItem.quantity - previousQuantity);
+               const quantitySubtracted = Math.max(0, previousQuantity - updatedItem.quantity);
+   
                const changeData = {
-                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
-                  item_id: item.item_id,
-                  user_id: userId, // Use the actual user ID
-                  quantity: item.quantity,
-                  note: "Stock updated",
+                  change_id: await generateNextStockChangeId(),
+                  item_id: updatedItem.item_id,
+                  user_id: userId,
+                  quantity_before: previousQuantity,
+                  quantity_added: quantityAdded,
+                  quantity_subtracted: quantitySubtracted,
+                  quantity_current: updatedItem.quantity,
+                  note: "Details updated",
                   created_at: new Date().toISOString(),
                };
                sendStockChange(changeData);
@@ -169,7 +229,7 @@ const StaffInventoryManagement = () => {
       } else {
          try {
             const nextItemId = await generateNextItemId();
-            const newItem = { ...item, item_id: nextItemId };
+            const newItem = { ...updatedItem, item_id: nextItemId };
             const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateInventoryItems.php", newItem);
             if (response.data.status === 201) {
                setItems([...items, newItem]);
@@ -181,16 +241,17 @@ const StaffInventoryManagement = () => {
                   description: "",
                   quantity: "",
                   price: "",
-                  reservation_price_perday: "",
                   status: "Available",
                });
-
-               // Send stock change data
+   
                const changeData = {
-                  change_id: await generateNextStockChangeId(), // Generate the next stock change ID
+                  change_id: await generateNextStockChangeId(),
                   item_id: newItem.item_id,
-                  user_id: userId, // Use the actual user ID
-                  quantity: newItem.quantity,
+                  user_id: userId,
+                  quantity_before: 0,
+                  quantity_added: newItem.quantity,
+                  quantity_subtracted: 0,
+                  quantity_current: newItem.quantity,
                   note: "New stock added",
                   created_at: new Date().toISOString(),
                };
@@ -203,25 +264,46 @@ const StaffInventoryManagement = () => {
          }
       }
    };
+   
 
-   // Handle delete item
-   const handleDelete = async (id) => {
-      try {
-         const response = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
-         if (response.data.status === 200) {
-            const filteredItems = items.filter((i) => i.item_id !== id);
-            setItems(filteredItems);
+// Handle delete item
+const handleDelete = async (id) => {
+   try {
+      // First, delete the stock change related to the item
+      const deleteStockChangeResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteStockChange.php`, {
+         data: { item_id: id }
+      });
+
+      if (deleteStockChangeResponse.data.status === 200) {
+         // If stock change deletion is successful, proceed to delete the notification preferences
+         const deleteNotificationResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteNotificationPreferences.php`, {
+            data: { item_id: id }
+         });
+
+         if (deleteNotificationResponse.data.status === 200) {
+            // If notification preferences deletion is successful, proceed to delete the item
+            const deleteItemResponse = await axios.delete(`http://localhost/stock-nyu/src/backend/api/DeleteInventoryItem.php?item_id=${id}`);
+            if (deleteItemResponse.data.status === 200) {
+               const filteredItems = items.filter((i) => i.item_id !== id);
+               setItems(filteredItems);
+            } else {
+               console.error("Error deleting item", deleteItemResponse.data.message);
+            }
          } else {
-            console.error("Error deleting item", response.data.message);
+            console.error("Error deleting notification preferences", deleteNotificationResponse.data.message);
          }
-      } catch (error) {
-         console.error("Error deleting item", error);
+      } else {
+         console.error("Error deleting stock change", deleteStockChangeResponse.data.message);
       }
-   };
+   } catch (error) {
+      console.error("Error deleting item, stock change, or notification preferences", error);
+   }
+};
 
    // Handle edit item
    const handleEdit = (item) => {
       setItem({ ...item, status: item.status || "Available" });
+      setPreviousQuantity(item.quantity); // Store the previous quantity before editing
       setEditMode(true);
       setShowModal(true); // Open the modal when editing
    };
@@ -236,7 +318,6 @@ const StaffInventoryManagement = () => {
          description: "",
          quantity: "",
          price: "",
-         reservation_price_perday: "",
          status: "Available",
       });
       setEditMode(false);
@@ -258,7 +339,14 @@ const StaffInventoryManagement = () => {
       setCurrentPage(pageNumber);
    };
 
-   const currentItems = items.slice(
+   // Filter items based on the search term
+   const filteredItems = items.filter(
+      (item) =>
+         item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         item.description.toLowerCase().includes(searchTerm.toLowerCase())
+   );
+
+   const currentItems = filteredItems.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
    );
@@ -268,10 +356,16 @@ const StaffInventoryManagement = () => {
       window.open('https://postimages.org', 'popupWindow', 'width=800,height=900,scrollbars=yes,resizable=no');
    };
 
+     // Handle search input change
+   const handleSearchChange = (e) => {
+         setSearchTerm(e.target.value);
+      };
+
    return (
       <>
+      <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid" style={{ paddingTop: '100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
@@ -279,6 +373,14 @@ const StaffInventoryManagement = () => {
                <div className="col-md-9">
                   <div className="container mt-5">
                      <h2 className="mb-4">Inventory Management</h2>
+
+                     <input
+                        type="text"
+                        className="form-control mb-4"
+                        placeholder="Search by item name or description"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                     />
 
                      <Button variant="primary" onClick={handleAddItem}>
                         Add Item
@@ -292,8 +394,7 @@ const StaffInventoryManagement = () => {
                               <th>Image</th>
                               <th>Description</th>
                               <th>Quantity</th>
-                              <th>Price</th>
-                              <th>Reservation Price/Day</th>
+                              <th>Price (₱)</th>
                               <th>Status</th>
                               <th>Actions</th>
                            </tr>
@@ -314,8 +415,7 @@ const StaffInventoryManagement = () => {
                                     </td>
                                     <td>{item?.description}</td>
                                     <td>{item?.quantity}</td>
-                                    <td>{item?.price}</td>
-                                    <td>{item?.reservation_price_perday}</td>
+                                    <td>₱{item?.price}</td>
                                     <td>{item?.status}</td>
                                     <td>
                                        <button className="btn btn-warning btn-sm mr-2" onClick={() => handleEdit(item)}>
@@ -324,12 +424,15 @@ const StaffInventoryManagement = () => {
                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item?.item_id)}>
                                           Delete
                                        </button>
+                                          <button className="btn btn-success btn-sm mr-2" onClick={() => handleOpenAddQuantityModal(item)}>
+                                            Add Quantity
+                                          </button>
                                     </td>
                                  </tr>
                               ))
                            ) : (
                               <tr>
-                                 <td colSpan="9">No items available.</td>
+                                 <td colSpan="8">No items available.</td>
                               </tr>
                            )}
                         </tbody>
@@ -337,13 +440,59 @@ const StaffInventoryManagement = () => {
 
                      <nav className="d-flex justify-content-center mt-4">
                         <ul className="pagination">
-                           {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
-                              <li key={index + 1} className="page-item">
-                                 <button onClick={() => paginate(index + 1)} className="page-link">
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginate(1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 First
+                              </button>
+                           </li>
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginate(currentPage - 1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 Previous
+                              </button>
+                           </li>
+
+                           {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, index) => (
+                              <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                                 <button
+                                    onClick={() => paginate(index + 1)}
+                                    className="page-link"
+                                    disabled={currentPage === index + 1}
+                                 >
                                     {index + 1}
                                  </button>
                               </li>
                            ))}
+
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginate(currentPage + 1)}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                              >
+                                 Next
+                              </button>
+                           </li>
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginate(Math.ceil(filteredItems.length / itemsPerPage))}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                              >
+                                 Last
+                              </button>
+                           </li>
                         </ul>
                      </nav>
 
@@ -412,10 +561,11 @@ const StaffInventoryManagement = () => {
                                     className="form-control"
                                     placeholder="Quantity"
                                     required
+                                    disabled={editMode} // Disable quantity input in edit mode
                                  />
                               </div>
                               <div className="form-group">
-                                 <label>Price</label>
+                                 <label>Price (₱)</label>
                                  <input
                                     type="number"
                                     step="0.01"
@@ -424,19 +574,6 @@ const StaffInventoryManagement = () => {
                                     onChange={handleInputChange}
                                     className="form-control"
                                     placeholder="Price"
-                                    required
-                                 />
-                              </div>
-                              <div className="form-group">
-                                 <label>Reservation Price Per Day</label>
-                                 <input
-                                    type="number"
-                                    step="0.01"
-                                    name="reservation_price_perday"
-                                    value={item.reservation_price_perday}
-                                    onChange={handleInputChange}
-                                    className="form-control"
-                                    placeholder="Reservation Price Per Day"
                                     required
                                  />
                               </div>
@@ -464,9 +601,35 @@ const StaffInventoryManagement = () => {
                            </form>
                         </Modal.Body>
                      </Modal>
+
+                     <Modal show={showAddQuantityModal} onHide={handleCloseAddQuantityModal}>
+                        <Modal.Header closeButton>
+                           <Modal.Title>Add Quantity</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                           <form onSubmit={(e) => { e.preventDefault(); handleAddQuantitySubmit(); }}>
+                              <div className="form-group">
+                                 <label>Quantity to Add</label>
+                                 <input
+                                    type="number"
+                                    name="quantityToAdd"
+                                    value={quantityToAdd}
+                                    onChange={(e) => setQuantityToAdd(e.target.value)}
+                                    className="form-control"
+                                    placeholder="Enter quantity"
+                                    required
+                                 />
+                              </div>
+                              <Button type="submit" className="btn btn-primary">
+                                 Add Quantity
+                              </Button>
+                           </form>
+                        </Modal.Body>
+                     </Modal>
                   </div>
                </div>
             </div>
+         </div>
          </div>
       </>
    );

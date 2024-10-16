@@ -27,7 +27,7 @@ if ($requestMethod == "PUT") {
         exit();
     }
 
-    if (isset($inputData['item_id'], $inputData['item_name'], $inputData['item_image'], $inputData['description'], $inputData['quantity'], $inputData['price'], $inputData['reservation_price_perday'], $inputData['status'])) {
+    if (isset($inputData['item_id'], $inputData['item_name'], $inputData['item_image'], $inputData['description'], $inputData['quantity'], $inputData['price'], $inputData['status'])) {
         $updateItem = updateInventoryItem(
             $inputData['item_id'],
             $inputData['item_name'],
@@ -35,7 +35,6 @@ if ($requestMethod == "PUT") {
             $inputData['description'],
             $inputData['quantity'],
             $inputData['price'],
-            $inputData['reservation_price_perday'],
             $inputData['status']
         );
         echo $updateItem;

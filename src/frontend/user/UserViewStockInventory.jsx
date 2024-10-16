@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
 import Sidebar from "../components/UserSidebar";
 import Toolbar from "../components/UserToolbar";
 import globalVariable from "/src/backend/data/GlobalVariable"; // Import globalVariable
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const UserViewStockInventory = () => {
   const [items, setItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(""); // Add search state
   const itemsPerPage = 5;
 
   const [reservationDetails, setReservationDetails] = useState({
-    user_id: globalVariable.getUserData().user_id || '', // Set this to the logged-in user's ID
+    user_id: globalVariable.getUserData().user_id || '',
     item_id: '',
     reservation_date_start: '',
     reservation_date_end: '',
     quantity_reserved: 1,
-    total_reservation_price: 0,
     status: 'Reserved',
     reservation_id: ''
   });
   const [selectedItem, setSelectedItem] = useState(null);
+  const [notificationPreferences, setNotificationPreferences] = useState({});
 
   // Fetch data from the backend
   const fetchData = async () => {
@@ -31,11 +32,40 @@ const UserViewStockInventory = () => {
       const response = await axios.get("http://localhost/stock-nyu/src/backend/api/ReadInventoryItems.php");
       if (response.data.status === 200) {
         setItems(response.data.data);
+        fetchNotificationPreferences(response.data.data);
       } else {
-        console.error("Error fetching data", response.data.message);
+        console.error("Failed to fetch items");
       }
     } catch (error) {
       console.error("Error fetching data", error);
+    }
+  };
+
+  const fetchNotificationPreferences = async (items) => {
+    try {
+      const userId = globalVariable.getUserData().user_id;
+      const preferences = {};
+      for (const item of items) {
+        const response = await axios.get(`http://localhost/stock-nyu/src/backend/api/GetNotificationPreferences.php?user_id=${userId}&item_id=${item.item_id}`);
+        if (response.data.status === 200 && response.data.preferences.length > 0) {
+          preferences[item.item_id] = response.data.preferences[0].notify_on_restock;
+        } else {
+          // Create a new notification preference if none exists
+          const createResponse = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateNotificationPreferences.php", {
+            user_id: userId,
+            item_id: item.item_id,
+            notify_on_restock: false
+          });
+          if (createResponse.data.status === 201) {
+            preferences[item.item_id] = false;
+          } else {
+            console.error("Failed to create notification preference");
+          }
+        }
+      }
+      setNotificationPreferences(preferences);
+    } catch (error) {
+      console.error("Error fetching notification preferences", error);
     }
   };
 
@@ -59,16 +89,33 @@ const UserViewStockInventory = () => {
     setCurrentPage(pageNumber);
   };
 
-  const currentItems = items.slice(
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Filter items based on search term
+  const filteredItems = items.filter(item =>
+    item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = filteredItems.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   const handleReserveClick = (item) => {
+    const now = new Date();
+    const endDate = new Date(now);
+    endDate.setDate(now.getDate() + 7);
+
     setSelectedItem(item);
     setReservationDetails({
       ...reservationDetails,
       item_id: item.item_id,
+      reservation_date_start: now.toISOString().split('T')[0],
+      reservation_date_end: endDate.toISOString().split('T')[0],
     });
     setShowModal(true);
   };
@@ -78,19 +125,10 @@ const UserViewStockInventory = () => {
     setReservationDetails({ ...reservationDetails, [name]: value });
   };
 
-  const calculateTotalPrice = () => {
-    const { reservation_date_start, reservation_date_end, quantity_reserved } = reservationDetails;
-    const start = new Date(reservation_date_start);
-    const end = new Date(reservation_date_end);
-    const days = (end - start) / (1000 * 60 * 60 * 24) + 1; // Calculate number of days
-    const total_price = days * selectedItem.reservation_price_perday * quantity_reserved;
-    return total_price;
-  };
-
   const validateReservation = () => {
     const { reservation_date_start, reservation_date_end, quantity_reserved } = reservationDetails;
     if (!reservation_date_start || !reservation_date_end) {
-      alert("Please select both start and end dates.");
+      alert("Please select reservation dates.");
       return false;
     }
     const start = new Date(reservation_date_start);
@@ -100,11 +138,11 @@ const UserViewStockInventory = () => {
       return false;
     }
     if (quantity_reserved < 1) {
-      alert("Quantity must be at least 1.");
+      alert("Quantity reserved must be at least 1.");
       return false;
     }
     if (quantity_reserved > selectedItem.quantity) {
-      alert(`Only ${selectedItem.quantity} items are available.`);
+      alert("Quantity reserved cannot exceed available quantity.");
       return false;
     }
     return true;
@@ -113,11 +151,9 @@ const UserViewStockInventory = () => {
   const handleReserve = async () => {
     if (!validateReservation()) return;
   
-    const total_reservation_price = calculateTotalPrice();
     const newReservationId = await generateNewReservationId();
     const reservationData = {
       ...reservationDetails,
-      total_reservation_price,
       reservation_id: newReservationId,
     };
   
@@ -125,70 +161,54 @@ const UserViewStockInventory = () => {
   
     try {
       // Create the reservation
-      const response = await axios.post(
-        "http://localhost/stock-nyu/src/backend/api/CreateReservation.php",
-        reservationData
-      );
-  
+      const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateReservation.php", reservationData);
       if (response.data.status === 201) {
-        alert("Reservation Created Successfully!");
+        // Subtract reserved quantity from item's available quantity
+        const newQuantity = selectedItem.quantity - reservationDetails.quantity_reserved;
   
-        // Update the item's quantity on success
-        const updatedQuantity = selectedItem.quantity - reservationDetails.quantity_reserved;
+        // Update item quantity in the backend
+        await updateItemQuantity(selectedItem.item_id, newQuantity);
   
-        try {
-          const updateResponse = await axios.put(
-            "http://localhost/stock-nyu/src/backend/api/UpdateItemQuantity.php",
-            {
-              item_id: selectedItem.item_id,
-              quantity: updatedQuantity, // Reduced quantity
-            }
-          );
-  
-          if (updateResponse.data.status === 200) {
-            fetchData(); // Refresh items to update quantity
-            setShowModal(false); // Close modal after success
-            // Reset reservation details
-            setReservationDetails({
-              user_id: globalVariable.getUserData().user_id || "",
-              item_id: "",
-              reservation_date_start: "",
-              reservation_date_end: "",
-              quantity_reserved: 1,
-              total_reservation_price: 0,
-              status: "Reserved",
-              reservation_id: "",
-            });
-          } else {
-            alert(updateResponse.data.message || "Failed to update item quantity.");
-          }
-        } catch (error) {
-          console.error("Error updating item quantity:", error);
-          alert("Failed to update item quantity. Please try again.");
-        }
+        alert("Reservation created successfully!");
+        setShowModal(false);
+        fetchData(); // Refresh the items list
       } else {
-        alert(response.data.message || "Reservation failed.");
+        alert("Failed to create reservation.");
       }
     } catch (error) {
-      console.error("Error creating reservation:", error);
-      alert("Reservation failed. Please try again.");
+      console.error("Error creating reservation", error);
+      alert("An error occurred while creating the reservation.");
     }
   };
   
-  
-  
+
+  const updateItemQuantity = async (itemId, newQuantity) => {
+    try {
+      const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateItemQuantity.php", {
+        item_id: itemId,
+        quantity: newQuantity
+      });
+      if (response.data.status === 200) {
+        console.log("Item quantity updated successfully");
+      } else {
+        console.error("Failed to update item quantity");
+      }
+    } catch (error) {
+      console.error("Error updating item quantity", error);
+    }
+  };
 
   const fetchLatestReservationId = async () => {
     try {
       const response = await axios.get("http://localhost/stock-nyu/src/backend/api/GetLatestReservationId.php");
       if (response.data.status === 200) {
-        return response.data.latest_reservation_id; // Ensure the backend returns the latest ID
+        return response.data.latest_reservation_id;
       } else {
-        console.error("Error fetching latest reservation ID:", response.data.message);
+        console.error("Failed to fetch latest reservation ID");
         return null;
       }
     } catch (error) {
-      console.error("Error fetching latest reservation ID:", error);
+      console.error("Error fetching latest reservation ID", error);
       return null;
     }
   };
@@ -198,13 +218,35 @@ const UserViewStockInventory = () => {
     const currentYear = new Date().getFullYear();
 
     if (!latestReservationId) {
-      // If no reservation ID exists, start from 000001
       return `R${currentYear}-000001`;
     } else {
-      // Extract the numeric part of the last ID (e.g., '000001' from 'R2024-000001')
-      const numericPart = latestReservationId.split('-')[1]; // Get the '000001' part
-      const newNumber = String(parseInt(numericPart) + 1).padStart(6, '0'); // Increment the number and pad with zeros
-      return `R${currentYear}-${newNumber}`;
+      const latestIdNumber = parseInt(latestReservationId.split('-')[1], 10);
+      const newIdNumber = latestIdNumber + 1;
+      return `R${currentYear}-${newIdNumber.toString().padStart(6, '0')}`;
+    }
+  };
+
+  const handleCheckboxChange = async (itemId) => {
+    const userId = globalVariable.getUserData().user_id;
+    const newPreference = !notificationPreferences[itemId];
+
+    try {
+      const response = await axios.put("http://localhost/stock-nyu/src/backend/api/UpdateNotificationPreferences.php", {
+        user_id: userId,
+        item_id: itemId,
+        notify_on_restock: newPreference
+      });
+
+      if (response.data.status === 200) {
+        setNotificationPreferences({
+          ...notificationPreferences,
+          [itemId]: newPreference
+        });
+      } else {
+        console.error("Failed to update notification preference");
+      }
+    } catch (error) {
+      console.error("Error updating notification preference", error);
     }
   };
 
@@ -216,13 +258,22 @@ const UserViewStockInventory = () => {
           <div className="col-md-3">
             <Sidebar />
           </div>
-          <div className="col-md-9">
+          <div className="col-md-9" style={{marginLeft:"300px"}}>
             <div className="container mt-5 text-center">
               <h2 className="mb-4">Available Stocks</h2>
+
+              <input
+                type="text"
+                className="form-control mb-4"
+                placeholder="Search items..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
 
               <table className="table table-bordered mt-5">
                 <thead className="thead-dark">
                   <tr>
+                    <th>Notify on Restock</th>
                     <th>Item Name</th>
                     <th>Image</th>
                     <th>Description</th>
@@ -235,6 +286,13 @@ const UserViewStockInventory = () => {
                 <tbody>
                   {currentItems.map((item) => (
                     <tr key={item.item_id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={!!notificationPreferences[item.item_id]}
+                          onChange={() => handleCheckboxChange(item.item_id)}
+                        />
+                      </td>
                       <td>{item.item_name}</td>
                       <td>
                         <img
@@ -263,13 +321,59 @@ const UserViewStockInventory = () => {
 
               <nav className="d-flex justify-content-center mt-4">
                 <ul className="pagination">
-                  {Array.from({ length: Math.ceil(items.length / itemsPerPage) }, (_, index) => (
-                    <li key={index + 1} className="page-item">
-                      <button onClick={() => paginate(index + 1)} className="page-link">
+                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <button
+                      onClick={() => paginate(1)}
+                      className="page-link"
+                      disabled={currentPage === 1}
+                    >
+                      First
+                    </button>
+                  </li>
+                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <button
+                      onClick={() => paginate(currentPage - 1)}
+                      className="page-link"
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </button>
+                  </li>
+
+                  {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, index) => (
+                    <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                      <button
+                        onClick={() => paginate(index + 1)}
+                        className="page-link"
+                        disabled={currentPage === index + 1}
+                      >
                         {index + 1}
                       </button>
                     </li>
                   ))}
+
+                  <li
+                    className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                  >
+                    <button
+                      onClick={() => paginate(currentPage + 1)}
+                      className="page-link"
+                      disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                    >
+                      Next
+                    </button>
+                  </li>
+                  <li
+                    className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
+                  >
+                    <button
+                      onClick={() => paginate(Math.ceil(filteredItems.length / itemsPerPage))}
+                      className="page-link"
+                      disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                    >
+                      Last
+                    </button>
+                  </li>
                 </ul>
               </nav>
 
@@ -297,7 +401,6 @@ const UserViewStockInventory = () => {
                     <div>
                       <p><strong>Item Name:</strong> {selectedItem.item_name}</p>
                       <p><strong>Description:</strong> {selectedItem.description}</p>
-                      <p><strong>Price Per Day:</strong> ${parseFloat(selectedItem.reservation_price_perday).toFixed(2)}</p>
                       <img
                         src={selectedItem.item_image}
                         alt={selectedItem.item_name}
@@ -312,6 +415,7 @@ const UserViewStockInventory = () => {
                           className="form-control"
                           onChange={handleInputChange}
                           value={reservationDetails.reservation_date_start}
+                          readOnly
                         />
                       </div>
                       <div className="form-group">
@@ -323,6 +427,7 @@ const UserViewStockInventory = () => {
                           className="form-control"
                           onChange={handleInputChange}
                           value={reservationDetails.reservation_date_end}
+                          readOnly
                         />
                       </div>
                       <div className="form-group">
@@ -338,6 +443,7 @@ const UserViewStockInventory = () => {
                           onChange={handleInputChange}
                         />
                       </div>
+                      <p><strong>Note:</strong> Your reservation will expire on {reservationDetails.reservation_date_end}.</p>
                     </div>
                   )}
                 </Modal.Body>

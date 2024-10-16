@@ -18,7 +18,7 @@ const StaffFaqsAndAnnouncement = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid" style={{ paddingTop: '100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />

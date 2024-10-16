@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
 
 const StaffStockHistory = () => {
    const [stockChanges, setStockChanges] = useState([]);
    const [searchTerm, setSearchTerm] = useState('');
-   const [currentPage, setCurrentPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(5);
+   const [currentPage, setCurrentPage] = useState(1);
+   const rowsPerPage = 5;
 
    useEffect(() => {
       fetchStockChanges();
@@ -17,7 +17,12 @@ const StaffStockHistory = () => {
    const fetchStockChanges = async () => {
       try {
          const response = await axios.get('http://localhost/stock-nyu/src/backend/api/readStockChange.php');
-         setStockChanges(response.data);
+         const sortedStockChanges = response.data.sort((a, b) => {
+            const idA = parseInt(a.change_id.replace('SC-', ''), 10);
+            const idB = parseInt(b.change_id.replace('SC-', ''), 10);
+            return idB - idA;
+         });
+         setStockChanges(sortedStockChanges);
       } catch (error) {
          console.error('Error fetching stock changes:', error);
       }
@@ -27,13 +32,8 @@ const StaffStockHistory = () => {
       setSearchTerm(event.target.value);
    };
 
-   const handleChangePage = (event, newPage) => {
-      setCurrentPage(newPage);
-   };
-
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setCurrentPage(0);
+   const paginateStockChanges = (pageNumber) => {
+      setCurrentPage(pageNumber);
    };
 
    const filteredStockChanges = stockChanges.filter(stockChange =>
@@ -41,15 +41,17 @@ const StaffStockHistory = () => {
       stockChange.item_name.toLowerCase().includes(searchTerm.toLowerCase())
    );
 
+   const currentStockChanges = filteredStockChanges.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid">
+         <div className="container-fluid" style={{ paddingTop: '100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
                </div>
-               <div className="col-md-9">
+               <div className="col-md-9" style={{ marginLeft: '-150px'}}>
                   <Container>
                      <Typography variant="h4" className="my-4">Stock Change History</Typography>
 
@@ -66,21 +68,31 @@ const StaffStockHistory = () => {
                         <Table>
                            <TableHead>
                               <TableRow>
+                                 <TableCell>Change ID</TableCell>
                                  <TableCell>Item ID</TableCell>
                                  <TableCell>Item Name</TableCell>
                                  <TableCell>User ID</TableCell>
-                                 <TableCell>Quantity</TableCell>
+                                 <TableCell>User Name</TableCell>
+                                 <TableCell>Quantity Before</TableCell>
+                                 <TableCell>Quantity Added</TableCell>
+                                 <TableCell>Quantity Subtracted</TableCell>
+                                 <TableCell>Quantity Current</TableCell>
                                  <TableCell>Note</TableCell>
                                  <TableCell>Created At</TableCell>
                               </TableRow>
                            </TableHead>
                            <TableBody>
-                              {filteredStockChanges.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((stockChange) => (
+                              {currentStockChanges.map((stockChange) => (
                                  <TableRow key={stockChange.change_id}>
+                                    <TableCell>{stockChange.change_id}</TableCell>
                                     <TableCell>{stockChange.item_id}</TableCell>
                                     <TableCell>{stockChange.item_name}</TableCell>
                                     <TableCell>{stockChange.user_id}</TableCell>
-                                    <TableCell>{stockChange.quantity}</TableCell>
+                                    <TableCell>{`${stockChange.f_name} ${stockChange.l_name}`}</TableCell>
+                                    <TableCell>{stockChange.quantity_before}</TableCell>
+                                    <TableCell>{stockChange.quantity_added}</TableCell>
+                                    <TableCell>{stockChange.quantity_subtracted}</TableCell>
+                                    <TableCell>{stockChange.quantity_current}</TableCell>
                                     <TableCell>{stockChange.note}</TableCell>
                                     <TableCell>{new Date(stockChange.created_at).toLocaleString()}</TableCell>
                                  </TableRow>
@@ -89,15 +101,64 @@ const StaffStockHistory = () => {
                         </Table>
                      </TableContainer>
 
-                     <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredStockChanges.length}
-                        rowsPerPage={rowsPerPage}
-                        page={currentPage}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                     />
+                     {/* Pagination */}
+                     <nav className="d-flex justify-content-center mt-4">
+                        <ul className="pagination">
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginateStockChanges(1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 First
+                              </button>
+                           </li>
+                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                              <button
+                                 onClick={() => paginateStockChanges(currentPage - 1)}
+                                 className="page-link"
+                                 disabled={currentPage === 1}
+                              >
+                                 Previous
+                              </button>
+                           </li>
+
+                           {Array.from({ length: Math.ceil(filteredStockChanges.length / rowsPerPage) }, (_, index) => (
+                              <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                                 <button
+                                    onClick={() => paginateStockChanges(index + 1)}
+                                    className="page-link"
+                                    disabled={currentPage === index + 1}
+                                 >
+                                    {index + 1}
+                                 </button>
+                              </li>
+                           ))}
+
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginateStockChanges(currentPage + 1)}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage)}
+                              >
+                                 Next
+                              </button>
+                           </li>
+                           <li
+                              className={`page-item ${currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage) ? "disabled" : ""}`}
+                           >
+                              <button
+                                 onClick={() => paginateStockChanges(Math.ceil(filteredStockChanges.length / rowsPerPage))}
+                                 className="page-link"
+                                 disabled={currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage)}
+                              >
+                                 Last
+                              </button>
+                           </li>
+                        </ul>
+                     </nav>
                   </Container>
                </div>
             </div>

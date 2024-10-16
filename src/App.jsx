@@ -14,18 +14,25 @@ import StaffDashboard from './frontend/staff/StaffDashboard';
 import UserViewStockInventory from './frontend/user/UserViewStockInventory';
 import UserReservation from './frontend/user/UserReservation';
 import UserFAQs from './frontend/user/UserFAQs';
+import UserNotifications from './frontend/user/UserNotifications';
 import StaffInventoryManagement from './frontend/staff/StaffInventoryManagement';
 import StaffStockHistory from './frontend/staff/StaffStockHistory';
 import StaffFaqsAndAnnouncement from './frontend/staff/StaffFaqsAndAnnouncement';
 import StaffFaqs from './frontend/staff/StaffFaqs';
 import StaffAnnouncement from './frontend/staff/StaffAnnouncement';
+import StaffReservations from './frontend/staff/StaffReservations';
+import StaffAnalytics from './frontend/staff/StaffAnalytics';
+import LoginOfGoogle from './frontend/LoginOfGoogle';
+import AdminAccountCreation from './frontend/admin/AdminAccountCreation';
+
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* Routes for All */}
-        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/" element={<Navigate to="/login_google" />} />
+        <Route path="/login_google" element={<LoginOfGoogle />} />
         <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register onCreate={() => window.location.reload()} />} />
         <Route path="/login" element={<Login />} />
@@ -35,14 +42,20 @@ function App() {
         <Route path="/login/user_viewstockinventory" element={<UserViewStockInventory />} />
         <Route path="/login/user_reservation" element={<UserReservation />} />
         <Route path="/login/user_faqs" element={<UserFAQs />} />
+        <Route path="/login/user_notifications" element={<UserNotifications />} />
 
-        {/* Routes Staff */}
+        {/* Routes for Staff */}
         <Route path="/login/staff_dashboard" element={<StaffDashboard />} />
         <Route path="/login/staff_inventorymanagement" element={<StaffInventoryManagement />} />
         <Route path="/login/staff_stockhistory" element={<StaffStockHistory />} />
         <Route path="/login/staff_faqsandannouncement" element={<StaffFaqsAndAnnouncement />} />
         <Route path="/login/staff_faqs" element={<StaffFaqs />} />
         <Route path="/login/staff_announcement" element={<StaffAnnouncement />} />
+        <Route path="/login/staff_reservations" element={<StaffReservations />} />
+        <Route path="/login/staff_analytics" element={<StaffAnalytics />} />
+
+        {/* Routes for Admin */}
+        <Route path="/login/admin_accountcreation" element={<AdminAccountCreation />} />
 
         {/* Route for BasicCRUD */}
         <Route path="/basic_crud" element={<BasicCRUD />}>

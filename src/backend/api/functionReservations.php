@@ -15,29 +15,33 @@ function error422($message)
 }
 
 // Function to handle reservation creation
-function createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $total_reservation_price, $status, $created_at)
+function createReservation($reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at)
 {
     global $conn;
-
-    $query = "INSERT INTO `tbl_reservations` (`reservation_id`, `user_id`, `item_id`, `reservation_date_start`, `reservation_date_end`, `quantity_reserved`, `total_reservation_price`, `status`, `created_at`) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+    
+    $query = "INSERT INTO tbl_reservations (reservation_id, user_id, item_id, reservation_date_start, reservation_date_end, quantity_reserved, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssssidss", $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $total_reservation_price, $status, $created_at);
+    
+    if ($stmt === false) {
+        error422('Prepare failed: ' . $conn->error);
+    }
 
+    // Binding the parameters
+    $stmt->bind_param('sssssdss', $reservation_id, $user_id, $item_id, $reservation_date_start, $reservation_date_end, $quantity_reserved, $status, $created_at);
+    
     if ($stmt->execute()) {
         $data = [
             'status' => 201,
             'message' => 'Reservation created successfully',
         ];
-        header("HTTP/1.1 201 Created");
         echo json_encode($data);
     } else {
-        error422('Failed to create reservation');
+        error422('Execution failed: ' . $stmt->error);
     }
 
     $stmt->close();
 }
+
 
 // Function to get the latest reservation ID
 function getLatestReservationId()
@@ -100,5 +104,21 @@ function updateReservationStatus($reservation_id, $new_status)
     $stmt->close();
 }
 
+// Function to retrieve all reservations
+function getAllReservations()
+{
+    global $conn;
 
+    $query = "SELECT r.reservation_id, r.user_id, u.f_name, u.l_name, r.item_id, r.reservation_date_start, r.reservation_date_end, r.quantity_reserved, r.status, r.created_at
+    FROM tbl_reservations as r
+    INNER JOIN tbl_users as u ON r.user_id =u.user_id";
+    $result = $conn->query($query);
+
+    $reservations = [];
+    while ($row = $result->fetch_assoc()) {
+        $reservations[] = $row;
+    }
+
+    return $reservations;
+}
 ?>
