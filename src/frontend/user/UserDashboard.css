@@ -1,10 +1,31 @@
       .dashboard-container {   
          display: flex;   
          height: 100vh;   
-         background: linear-gradient(180deg, #FFFEFB 1%, #000f29 100%);   
+         background: radial-gradient(circle, #7b7865, #444f66, #000f29); /* Abstract gradient with gray, midtone, and blue */
+         background-size: 200% 200%;  /* Larger size for smoother, abstract transitions */
          min-height: 100vh;   
-         padding-top: 20px; /* Add padding to move content up */ 
+         padding-top: 20px; 
+         animation: bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;  /* Slower, bouncy motion */
       }
+
+      @keyframes bouncyMovement {
+         0% {
+            background-position: 0% 0%;
+         }
+         25% {
+            background-position: 50% 100%;
+         }
+         50% {
+            background-position: 100% 50%;
+         }
+         75% {
+            background-position: 50% 0%;
+         }
+         100% {
+            background-position: 0% 100%;
+         }
+      }
+
 
       .content-wrapper {   
          flex-grow: 1;   
@@ -98,7 +119,7 @@
 
       .card-text {   
          font-size: 1rem;   
-         color: #333; 
+         color: #a8a8a8; 
       }
 
       .card-container {   

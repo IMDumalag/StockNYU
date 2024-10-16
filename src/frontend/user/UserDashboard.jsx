@@ -40,6 +40,7 @@ const UserDashboard = () => {
                             We're glad to have you back! Explore your dashboard to <strong>manage your inventory, reservations, and find answers to common questions.</strong> Let’s make today productive!
                         </p>
                     </div>
+
                     <br></br>
                     <br />
                     <div className="dashboard-cards">

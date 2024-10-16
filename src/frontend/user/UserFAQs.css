@@ -9,10 +9,33 @@
          width: 100%;
          padding: 0;
          margin: 0;
-         background: linear-gradient(180deg, #FFFEFB 1%, #000f29 100%);
+         background: radial-gradient(circle, #7b7865, #444f66, #000f29);
          min-height: 100vh;
+         background-size: 200% 200%;
+         min-height: 100vh;   
+         padding-top: 20px; 
+         animation: bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; 
+
       }
 
+      @keyframes bouncyMovement {
+         0% {
+            background-position: 0% 0%;
+         }
+         25% {
+            background-position: 50% 100%;
+         }
+         50% {
+            background-position: 100% 50%;
+         }
+         75% {
+            background-position: 50% 0%;
+         }
+         100% {
+            background-position: 0% 100%;
+         }
+      }
+      
       .row {
          display: flex;
          justify-content: flex-start;
@@ -48,14 +71,15 @@
          margin-right: auto;
       }
 
-      .faq-category-container {      display: flex;
+      .faq-category-container {      
+         display: flex;
          justify-content: space-between;
       }
 
       .faq-category {
          background-color: #fff;
          padding: 20px;
-         border-radius: 8px;
+         border-radius: 4px;
          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
