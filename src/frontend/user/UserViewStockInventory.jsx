@@ -253,6 +253,7 @@ const UserViewStockInventory = () => {
   return (
     <>
       <Toolbar />
+      <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-3">
@@ -458,6 +459,8 @@ const UserViewStockInventory = () => {
               </Modal>
             </div>
           </div>
+          
+        </div>
         </div>
       </div>
     </>
