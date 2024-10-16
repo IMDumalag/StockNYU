@@ -17,7 +17,12 @@ const StaffStockHistory = () => {
    const fetchStockChanges = async () => {
       try {
          const response = await axios.get('http://localhost/stock-nyu/src/backend/api/readStockChange.php');
-         setStockChanges(response.data);
+         const sortedStockChanges = response.data.sort((a, b) => {
+            const idA = parseInt(a.change_id.replace('SC-', ''), 10);
+            const idB = parseInt(b.change_id.replace('SC-', ''), 10);
+            return idB - idA;
+         });
+         setStockChanges(sortedStockChanges);
       } catch (error) {
          console.error('Error fetching stock changes:', error);
       }

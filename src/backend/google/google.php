@@ -26,7 +26,7 @@ function CheckUser()
 
     if (mysqli_num_rows($result) == 0) {
         // If no users exist, start with the base ID
-        $user_id = "USR01";
+        $user_id = "USR00001";
     } else {
         // If there are users, get the last inserted user_id
         $row = mysqli_fetch_assoc($result);
@@ -118,6 +118,7 @@ if ($requestMethod == 'POST') {
             $address = $user['address'];
             $picture = $user['profile_picture'];
             $studentnum = $user['nu_given_identifier'];
+            $access_id = $user['access_id']; // Assuming access_id is a column in your tbl_users table
             $user_data =
                 [
                     'isNewUser' => $isNewUser,
@@ -132,6 +133,7 @@ if ($requestMethod == 'POST') {
                     'address' => $address,
                     'expires_at' => $exp,
                     'profile_picture' => $picture,
+                    'access_id' => $access_id, // Include access_id in the response
                 ];
             $jwt = JWT::encode($user_data, $env['VITE_REACT_JWT_SECRET'], 'HS256');
             header("HTTP/1.0 201 Created");

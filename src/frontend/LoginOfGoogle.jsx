@@ -6,10 +6,10 @@ export default function Login() {
   return (
     <>
       <div className="parentCont">
-        <img src="" alt="logo image" className="backgroundImage" />
+        <img src="src\assets\Nu bulldogs store 3.png" alt="logo image" className="backgroundImage" />
         <div className="topContainer">
           <div className="logoTextContainer">
-            <img src="" alt="NU Logo" className="logoImage" />
+            <img src="src\assets\NU-logo.png" alt="NU Logo" className="logoImage" />
             <h3>NU DASMARIÑAS</h3>
           </div>
         </div>

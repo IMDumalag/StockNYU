@@ -4,12 +4,16 @@ import { Menu, MenuItem, IconButton, Avatar } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import globalVariable from '/src/backend/data/GlobalVariable';
 import './StaffToolbar.css'; // Make sure to create and import the CSS file
+import { googleLogout } from "@react-oauth/google";
+import { useCookies } from 'react-cookie';
+import { jwtDecode } from "jwt-decode";
 
 const StaffToolbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const location = useLocation();
+  const [cookies, setCookie, removeCookie] = useCookies(["user_token"]);
 
   const [dashboardText, setDashboardText] = useState('DASHBOARD');
   const [userData, setUserData] = useState(globalVariable.getUserData());
@@ -60,8 +64,10 @@ const StaffToolbar = () => {
   const handleLogout = () => {
     globalVariable.setUserData({});
     globalVariable.setCurrentItem({});
-    navigate('/home');
+    googleLogout();
+    removeCookie("user_token");
     setAnchorEl(null);
+    navigate('/');
   };
  
 
@@ -86,7 +92,7 @@ const StaffToolbar = () => {
             />
         </Avatar>
 
-          <span className="username">{userData.f_name} {userData.l_name}</span>
+          <span className="username">{userData.fname} {userData.lname}</span>
           <IconButton onClick={handleClick} color="inherit">
             <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
           </IconButton>
@@ -103,7 +109,6 @@ const StaffToolbar = () => {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </li>
