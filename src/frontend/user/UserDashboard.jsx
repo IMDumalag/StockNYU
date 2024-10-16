@@ -33,7 +33,7 @@ const UserDashboard = () => {
                     <div className="background-image"></div>
                     <div className="line-box"></div>
                     <h1 className="text-center welcome-text">
-                        Welcome <strong className="highlighted-text">{userData.f_name}</strong> <strong className="highlighted-text">{userData.l_name} !</strong>
+                        Welcome <strong className="highlighted-text">{userData.fname}</strong> <strong className="highlighted-text">{userData.lname} !</strong>
                     </h1>
                     <br></br>
                     <div className="dashboard-cards">

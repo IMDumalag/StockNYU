@@ -1,0 +1,87 @@
+html, body {
+   margin: 0;
+   padding: 0;
+   height: 100%;
+ }
+ 
+ .parentCont .topContainer{
+   display: flex;
+   padding: 50px;
+   justify-content: center;
+   align-items: center;
+ }
+ 
+ .parentCont .topContainer h3{
+   margin-top: 10px;
+ }
+ 
+ .parentCont .backgroundImage{
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   opacity: 0.2;
+   filter: blur(1px);
+   width: 700px;
+   height: 700px;
+ }
+ 
+ .parentCont .topContainer .logoTextContainer{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+ 
+ .parentCont .topContainer .logoTextContainer .logoImage{
+   width: 40px; /* Adjust size of the logo as needed */
+   height: 40px;
+   margin-right: 10px;
+   margin-bottom: 3px;
+ }
+ 
+ .parentCont .topContainer .logoTextContainer h3{
+   font-size: 24px; /* Adjust text size */
+   font-weight: bold;
+   color: white;
+   z-index: 1;
+ }
+ 
+ .parentCont {
+   position: relative;
+   height: 100vh;
+   width: 100%;
+   align-items: center;
+   justify-content: center;
+   background: radial-gradient(circle at top left, #35408E, #FFD41C, #242c69, #242c69, #FFD41C),
+               radial-gradient(circle at top right, #35408E, #FFD41C);
+   background-size: 250% 250%; /* Reduced size of the radial gradients */
+   animation: gradientAnimation 20s ease-in-out infinite; 
+   margin: 0;
+ }
+ 
+ @keyframes gradientAnimation {
+   0% {
+     background-position: 0% 0%;
+   }
+   50% {
+     background-position: 100% 100%;
+   }
+   100% {
+     background-position: 0% 0%;
+   }
+ }
+ 
+ /* Container to reverse the blur on content */
+ .container {
+   background: rgba(255, 255, 255, 0.1); /* Transparent white background */
+   backdrop-filter: blur(5px);
+   padding: 2rem;
+   border-radius: 10px;
+ }
+      
+ .parentCont .loginCont{
+   display: flex;
+   justify-content: center;
+   width: 100%;
+   height: 500px;
+ }
