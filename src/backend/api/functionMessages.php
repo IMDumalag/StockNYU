@@ -110,4 +110,77 @@ function deleteNotificationPreference($item_id)
    }
 }
 
+// Function to insert a new message
+function insertMessage($reciever_id, $message, $sent_date, $sender_id)
+{
+   global $conn;
+
+   $query = "INSERT INTO tbl_messages (reciever_id, message, sent_date, sender_id) VALUES (?, ?, ?, ?)";
+   $stmt = $conn->prepare($query);
+   $stmt->bind_param("ssss", $reciever_id, $message, $sent_date, $sender_id);
+
+   if ($stmt->execute()) {
+      $data = [
+         'status' => 201,
+         'message' => 'Message Inserted Successfully!',
+         'message_id' => $stmt->insert_id
+      ];
+      header("HTTP/1.1 201 Created");
+      echo json_encode($data);
+   } else {
+      error422("Error: {$stmt->error}");
+   }
+}
+
+// Function to retrieve messages based on reciever ID
+function getMessagesByReceiverId($reciever_id)
+{
+   global $conn;
+
+   $query = "SELECT m.message_id, m.reciever_id, m.message, m.sent_date, m.sender_id, u.f_name, u.l_name, u.email, u.profile_picture
+   FROM tbl_messages as m
+   INNER JOIN tbl_users as u ON m.sender_id = u.user_id
+   WHERE reciever_id = ?";
+   $stmt = $conn->prepare($query);
+   $stmt->bind_param("s", $reciever_id);
+
+   if ($stmt->execute()) {
+      $result = $stmt->get_result();
+      $messages = $result->fetch_all(MYSQLI_ASSOC);
+
+      $data = [
+         'status' => 200,
+         'messages' => $messages
+      ];
+      header("HTTP/1.1 200 OK");
+      echo json_encode($data);
+   } else {
+      error422("Error: {$stmt->error}");
+   }
+}
+
+// Function to delete a message
+function deleteMessage($message_id)
+{
+   global $conn;
+
+   $query = "DELETE FROM tbl_messages WHERE message_id = ?";
+   $stmt = $conn->prepare($query);
+   $stmt->bind_param("s", $message_id);
+
+   if ($stmt->execute()) {
+      if ($stmt->affected_rows > 0) {
+         $data = [
+            'status' => 200,
+            'message' => 'Message Deleted Successfully!'
+         ];
+         header("HTTP/1.1 200 OK");
+         echo json_encode($data);
+      } else {
+         error422("No matching record found to delete.");
+      }
+   } else {
+      error422("Error: {$stmt->error}");
+   }
+}
 ?>

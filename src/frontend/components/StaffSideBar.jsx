@@ -23,8 +23,9 @@ const StaffSidebar = () => {
             <Link to="/login/staff_dashboard" className="list-group-item list-group-item-action custom-text">Dashboard</Link>
             <Link to="/login/staff_inventorymanagement" className="list-group-item list-group-item-action custom-text">Stock Inventory</Link>
             <Link to="/login/staff_stockhistory" className="list-group-item list-group-item-action custom-text">Stock History</Link>
+            <Link to="/login/staff_reservations" className="list-group-item list-group-item-action custom-text">Stock Reservations</Link>
             <Link to="/login/staff_faqsandannouncement" className="list-group-item list-group-item-action custom-text">FAQs and Announcement</Link>
-            <Link to="#" className="list-group-item list-group-item-action custom-text">Analytics</Link>
+            <Link to="/login/staff_analytics" className="list-group-item list-group-item-action custom-text">Analytics</Link>
             
           </div>
         </div>
