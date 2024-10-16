@@ -22,6 +22,7 @@ import StaffFaqs from './frontend/staff/StaffFaqs';
 import StaffAnnouncement from './frontend/staff/StaffAnnouncement';
 import StaffReservations from './frontend/staff/StaffReservations';
 import StaffAnalytics from './frontend/staff/StaffAnalytics';
+import LoginOfGoogle from './frontend/LoginOfGoogle';
 
 
 function App() {
@@ -29,7 +30,8 @@ function App() {
     <Router>
       <Routes>
         {/* Routes for All */}
-        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/" element={<Navigate to="/login_google" />} />
+        <Route path="/login_google" element={<LoginOfGoogle />} />
         <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register onCreate={() => window.location.reload()} />} />
         <Route path="/login" element={<Login />} />

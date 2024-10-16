@@ -29,7 +29,7 @@ const StaffDashboard = () => {
                </div>
                <div className="col-md-9">
                   <div className="container mt-4" style={{ marginLeft: '-200px'}}>
-                     <h1>Welcome {userData.f_name} {userData.l_name}</h1>
+                     <h1>Welcome {userData.fname} {userData.lname}</h1>
                   </div>
                </div>
             </div>

@@ -5,12 +5,16 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import globalVariable from '/src/backend/data/GlobalVariable';
 import './UserToolbar.css';
+import { googleLogout } from "@react-oauth/google";
+import { useCookies } from 'react-cookie';
+import { jwtDecode } from "jwt-decode";
 
 const Toolbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
     const location = useLocation(); // Get current route
+    const [cookies, setCookie, removeCookie] = useCookies(["user_token"]);
 
     // State to hold the dashboard text
     const [dashboardText, setDashboardText] = useState('DASHBOARD');
@@ -65,8 +69,10 @@ const Toolbar = () => {
     const handleLogout = () => {
         globalVariable.setUserData({});
         globalVariable.setCurrentItem({});
-        navigate('/home');
+        googleLogout();
+        removeCookie("user_token");
         setAnchorEl(null);
+        navigate('/');
     };
 
     const handleNotificationsClick = () => {
@@ -96,7 +102,7 @@ const Toolbar = () => {
                         style={{ width: '100%', height: '100%' }} 
                     />
                 </Avatar>
-                    <span className="username">{userData.f_name} {userData.l_name}</span>
+                    <span className="username">{userData.fname} {userData.lname}</span>
                     <IconButton onClick={handleClick} color="inherit">
                         <img src="/src/assets/Expand Arrow.png" alt="Expand Arrow" className="dropdown-arrow" />
                     </IconButton>
