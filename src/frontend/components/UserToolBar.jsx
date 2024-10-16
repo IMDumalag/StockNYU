@@ -119,7 +119,6 @@ const Toolbar = () => {
                             horizontal: 'right',
                         }}
                     >
-                        <MenuItem onClick={handleClose}>Profile</MenuItem>
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                     </Menu>
                 </li>

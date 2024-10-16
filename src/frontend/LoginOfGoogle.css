@@ -22,8 +22,8 @@ html, body {
    transform: translate(-50%, -50%);
    opacity: 0.2;
    filter: blur(1px);
-   width: 700px;
-   height: 700px;
+   width: 1800px;
+   height: 800px;
  }
  
  .parentCont .topContainer .logoTextContainer{

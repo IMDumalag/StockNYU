@@ -17,7 +17,13 @@ export default function LoginGoogle() {
          const decodedPayload = jwtDecode(cookies.user_token);
          console.log(decodedPayload);
          globalVariable.setUserData(decodedPayload); // Set decoded payload in global variable
-         navigate("/login/user_dashboard");
+         
+         // Navigate based on access_id
+         if (decodedPayload.access_id === 1) {
+            navigate("/login/user_dashboard");
+         } else if (decodedPayload.access_id === 2) {
+            navigate("/login/staff_dashboard");
+         }
       }
    }, [cookies.user_token]);
 
@@ -38,7 +44,16 @@ export default function LoginGoogle() {
             // Decode the JWT token after login to get the payload and set it to the global variable
             const decodedPayload = jwtDecode(res.data.data);
             globalVariable.setUserData(decodedPayload); // Set decoded payload in global variable
-            navigate("/login/user_dashboard");
+            
+            // Navigate based on access_id
+            if (decodedPayload.access_id === 1) {
+               navigate("/login/user_dashboard");
+            } else if (decodedPayload.access_id === 2) {
+               navigate("/login/staff_dashboard");
+            } else if (decodedPayload.access_id === 3) {
+               navigate("/login/admin_accountcreation");
+            }
+            
          }
       } catch (error) {
          console.log(error);
@@ -58,4 +73,3 @@ export default function LoginGoogle() {
       />
    );
 }
-
