@@ -107,3 +107,27 @@
          justify-content: center;   
          flex-wrap: wrap; 
       }
+
+      .chat-bubble {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         padding: 20px;
+
+     }
+     
+     .description-text {
+         font-size: 1.2rem;
+         color: #ffffff;
+         background-color: #b8b8b811;
+         margin: 0;
+         font-weight: 300;
+         text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+         line-height: 1.5;
+         text-align: center;
+         padding: 15px 20px;
+         border-radius: 15px;
+         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+         border: 1px solid rgba(255, 255, 255, 0.2);
+     }
+     

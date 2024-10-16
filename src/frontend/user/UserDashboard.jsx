@@ -33,9 +33,15 @@ const UserDashboard = () => {
                     <div className="background-image"></div>
                     <div className="line-box"></div>
                     <h1 className="text-center welcome-text">
-                        Welcome <strong className="highlighted-text">{userData.f_name}</strong> <strong className="highlighted-text">{userData.l_name} !</strong>
+                        Welcome <strong className="highlighted-text">{userData.f_name}</strong> <strong className="highlighted-text">{userData.l_name}!</strong>
                     </h1>
+                    <div class="chat-bubble">
+                        <p class="description-text">
+                            We're glad to have you back! Explore your dashboard to <strong>manage your inventory, reservations, and find answers to common questions.</strong> Let’s make today productive!
+                        </p>
+                    </div>
                     <br></br>
+                    <br />
                     <div className="dashboard-cards">
                         <div className="dashboard-card" onClick={() => handleNavigation('/login/user_viewstockinventory')}>
                             <img src="/src/assets/inventory icon.png" alt="Inventory Icon" className="card-image" />

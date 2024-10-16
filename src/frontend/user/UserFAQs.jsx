@@ -1,107 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import { Container, TextField, Typography, Box, Grid, List, ListItem, ListItemText } from '@mui/material';
 import UserSidebar from '../components/UserSidebar';
 import UserToolbar from '../components/UserToolbar';
+import './UserFAQs.css';
 
 const UserFAQs = () => {
-   const [faqs, setFaqs] = useState([]);
-   const [searchTerm, setSearchTerm] = useState('');
-   const [currentPage, setCurrentPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [faqs, setFaqs] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
-   useEffect(() => {
-      fetchFaqs();
-   }, []);
+    useEffect(() => {
+        fetchFaqs();
+    }, []);
 
-   const fetchFaqs = async () => {
-      try {
-         const response = await axios.get('http://localhost/stock-nyu/src/backend/api/readFaqsList.php');
-         setFaqs(response.data.faqs || []); // Make sure the data is always an array
-      } catch (error) {
-         console.error('Error fetching FAQs:', error);
-         setFaqs([]); // Default to empty array on error
-      }
-   };
+    const fetchFaqs = async () => {
+        try {
+            const response = await axios.get('http://localhost/stock-nyu/src/backend/api/readFaqsList.php');
+            setFaqs(response.data.faqs || []); // Make sure the data is always an array
+        } catch (error) {
+            console.error('Error fetching FAQs:', error);
+            setFaqs([]); // Default to empty array on error
+        }
+    };
 
-   const handleSearch = (event) => {
-      setSearchTerm(event.target.value);
-   };
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-   const handleChangePage = (event, newPage) => {
-      setCurrentPage(newPage);
-   };
+    const filteredFaqs = faqs.filter(faq => {
+        const regex = new RegExp(searchTerm, 'i'); // 'i' makes it case-insensitive
+        return regex.test(faq.question) || regex.test(faq.answer);
+    });
 
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setCurrentPage(0);
-   };
-
-   // Filter FAQs based on both the question and answer
-   const filteredFaqs = faqs.filter(faq => {
-      const regex = new RegExp(searchTerm, 'i'); // 'i' makes it case-insensitive
-      return regex.test(faq.question) || regex.test(faq.answer);
-   });
-
-   return (
-      <>
-         <UserToolbar />
-         <div className="container-fluid">
-            <div className="row">
-               <div className="col-md-3">
-                  <UserSidebar />
-               </div>
-               <div className="col-md-9">
-                  <Container>
-                     <Typography variant="h4" className="my-4">Frequently Asked Questions</Typography>
-
-                     <TextField
-                        variant="outlined"
-                        label="Search by Question or Answer"
-                        fullWidth
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        className="mb-4"
-                     />
-
-                     <TableContainer component={Paper}>
-                        <Table>
-                           <TableHead>
-                              <TableRow>
-                                 <TableCell>Question</TableCell>
-                                 <TableCell>Answer</TableCell>
-                                 <TableCell>Created By</TableCell>
-                                 <TableCell>Created Date</TableCell>
-                              </TableRow>
-                           </TableHead>
-                           <TableBody>
-                              {filteredFaqs.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((faq) => (
-                                 <TableRow key={faq.faq_id}>
-                                    <TableCell>{faq.question}</TableCell>
-                                    <TableCell>{faq.answer}</TableCell>
-                                    <TableCell>{`${faq.f_name} ${faq.l_name}`}</TableCell>
-                                    <TableCell>{new Date(faq.created_date).toLocaleString()}</TableCell>
-                                 </TableRow>
-                              ))}
-                           </TableBody>
-                        </Table>
-                     </TableContainer>
-
-                     <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredFaqs.length}
-                        rowsPerPage={rowsPerPage}
-                        page={currentPage}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                     />
-                  </Container>
-               </div>
+    return (
+        <>
+            <UserToolbar />
+            <div className="container-fluid faq-container">
+                <div className="row">
+                    <div className="col-md-3 sidebar-column">
+                        <UserSidebar />
+                    </div>
+                    <div className="col-md-9 content-column">
+                        <Container>
+                            <Box className="faq-header">
+                                <Typography variant="h3">FAQ</Typography>
+                                <Box className="faq-search-bar">
+                                    <TextField
+                                        variant="outlined"
+                                        placeholder="How do we help?"
+                                        fullWidth
+                                        value={searchTerm}
+                                        onChange={handleSearch}
+                                        InputProps={{
+                                            className: 'faq-search-bar-input'
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+                            <Grid container spacing={3} className="faq-category-container">
+                                <Grid item xs={12} md={6}>
+                                    <Box className="faq-category">
+                                        <Typography variant="h5">Getting Started</Typography>
+                                        <List>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="How to use?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="How do I make reservation?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="What is StockNYU?" />
+                                            </ListItem>
+                                        </List>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <Box className="faq-category">
+                                        <Typography variant="h5">Accept pending reservation</Typography>
+                                        <List>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="How do I know if my order is confirmed?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="Can I cancel or modify my reservation?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="What happens if I don't receive a confirmation email?" />
+                                            </ListItem>
+                                        </List>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <Box className="faq-category">
+                                        <Typography variant="h5">Accounts</Typography>
+                                        <List>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="Can I make a reservation without creating an account?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="How to create an account in StockNYU?" />
+                                            </ListItem>
+                                        </List>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <Box className="faq-category">
+                                        <Typography variant="h5">Others</Typography>
+                                        <List>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="Where can I reserve my items?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="Adding item not working?" />
+                                            </ListItem>
+                                            <ListItem className="faq-list-item">
+                                                <ListItemText primary="Where can I discuss tips and techniques with others?" />
+                                            </ListItem>
+                                        </List>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Container>
+                    </div>
+                </div>
             </div>
-         </div>
-      </>
-   );
+        </>
+    );
 };
 
 export default UserFAQs;
