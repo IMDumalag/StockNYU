@@ -104,4 +104,21 @@ function updateReservationStatus($reservation_id, $new_status)
     $stmt->close();
 }
 
+// Function to retrieve all reservations
+function getAllReservations()
+{
+    global $conn;
+
+    $query = "SELECT r.reservation_id, r.user_id, u.f_name, u.l_name, r.item_id, r.reservation_date_start, r.reservation_date_end, r.quantity_reserved, r.status, r.created_at
+    FROM tbl_reservations as r
+    INNER JOIN tbl_users as u ON r.user_id =u.user_id";
+    $result = $conn->query($query);
+
+    $reservations = [];
+    while ($row = $result->fetch_assoc()) {
+        $reservations[] = $row;
+    }
+
+    return $reservations;
+}
 ?>

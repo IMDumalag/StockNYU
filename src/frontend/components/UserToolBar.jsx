@@ -16,21 +16,8 @@ const Toolbar = () => {
     const [dashboardText, setDashboardText] = useState('DASHBOARD');
 
     // State to hold the user's name
-    const [userName, setUserName] = useState('');
     const [userData, setUserData] = useState(globalVariable.getUserData());
 
-    // Function to fetch user data from the backend
-    const fetchUserData = async () => {
-        try {
-            const response = await fetch('/api/user/profile'); // Adjust the endpoint as needed
-            const data = await response.json();
-            if (data && data.f_name && data.l_name) {
-                setUserName(`${data.f_name} ${data.l_name}`);
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    };
 
     useEffect(() => {
         switch (location.pathname) {

@@ -150,18 +150,25 @@ const UserViewStockInventory = () => {
 
   const handleReserve = async () => {
     if (!validateReservation()) return;
-
+  
     const newReservationId = await generateNewReservationId();
     const reservationData = {
       ...reservationDetails,
       reservation_id: newReservationId,
     };
-
+  
     console.log("Reservation Details:", reservationData);
-
+  
     try {
+      // Create the reservation
       const response = await axios.post("http://localhost/stock-nyu/src/backend/api/CreateReservation.php", reservationData);
       if (response.data.status === 201) {
+        // Subtract reserved quantity from item's available quantity
+        const newQuantity = selectedItem.quantity - reservationDetails.quantity_reserved;
+  
+        // Update item quantity in the backend
+        await updateItemQuantity(selectedItem.item_id, newQuantity);
+  
         alert("Reservation created successfully!");
         setShowModal(false);
         fetchData(); // Refresh the items list
@@ -173,6 +180,7 @@ const UserViewStockInventory = () => {
       alert("An error occurred while creating the reservation.");
     }
   };
+  
 
   const updateItemQuantity = async (itemId, newQuantity) => {
     try {

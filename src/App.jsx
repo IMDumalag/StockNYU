@@ -20,6 +20,8 @@ import StaffStockHistory from './frontend/staff/StaffStockHistory';
 import StaffFaqsAndAnnouncement from './frontend/staff/StaffFaqsAndAnnouncement';
 import StaffFaqs from './frontend/staff/StaffFaqs';
 import StaffAnnouncement from './frontend/staff/StaffAnnouncement';
+import StaffReservations from './frontend/staff/StaffReservations';
+import StaffAnalytics from './frontend/staff/StaffAnalytics';
 
 
 function App() {
@@ -46,6 +48,8 @@ function App() {
         <Route path="/login/staff_faqsandannouncement" element={<StaffFaqsAndAnnouncement />} />
         <Route path="/login/staff_faqs" element={<StaffFaqs />} />
         <Route path="/login/staff_announcement" element={<StaffAnnouncement />} />
+        <Route path="/login/staff_reservations" element={<StaffReservations />} />
+        <Route path="/login/staff_analytics" element={<StaffAnalytics />} />
 
         {/* Route for BasicCRUD */}
         <Route path="/basic_crud" element={<BasicCRUD />}>
