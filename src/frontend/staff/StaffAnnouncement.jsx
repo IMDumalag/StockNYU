@@ -51,7 +51,7 @@ const StaffAnnouncement = () => {
                </div>
                <div className="col-md-9">
                   <div className="container mt-4">
-                     <h1 className="text-primary">Add Announcement</h1>
+                     <h1 className="text">Add Announcement</h1>
                      {message && <div className="alert alert-info">{message}</div>}
                      <div className="row">
                         <div className="col-md-6">
