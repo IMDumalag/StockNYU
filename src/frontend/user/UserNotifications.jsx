@@ -113,9 +113,9 @@ const Notifications = () => {
             <div className="notification-details p-4 card" style={{ width: '70%' , transition:'none' , transform:'none'}}>
               {selectedNotification ? (
                 <>
-                  <h4>{selectedNotification.f_name} {selectedNotification.l_name}</h4>
+                  <h4>From: {selectedNotification.f_name} {selectedNotification.l_name}</h4>
                   <p>{selectedNotification.message}</p>
-                  <p className="small text-muted">{selectedNotification.sent_date}</p>
+                  <p className="small text-muted"> {selectedNotification.sent_date}</p>
                 </>
               ) : (
                 <div className="text-muted">Select a notification to view details</div>
