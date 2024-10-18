@@ -66,7 +66,7 @@ const StaffReservations = () => {
 
    const fetchUsers = async () => {
       try {
-         const response = await axios.get('http://localhost/stock-nyu/src/backend/api/ReadUser.php');
+         const response = await axios.get('http://localhost/stock-nyu/src/backend/api/ReadUsers.php');
          setUsers(response.data);
       } catch (error) {
          console.error('Error fetching users:', error);
@@ -179,6 +179,25 @@ const StaffReservations = () => {
          if (response.data.status === 201) {
             alert('Purchase history created successfully!');
             setShowPurchaseModal(false);
+
+            // Update reservation status to "Purchased"
+            if (purchaseData.reservation_id) {
+               await axios.post('http://localhost/stock-nyu/src/backend/api/PurchaseReservation.php', {
+                  reservation_id: purchaseData.reservation_id
+               });
+            }
+
+            // Send message to the user
+            const message = purchaseData.reservation_id
+               ? `Your reservation with ID ${purchaseData.reservation_id} has been purchased.`
+               : `Your purchase with ID ${purchaseData.purchase_id} has been completed.`;
+
+            await axios.post('http://localhost/stock-nyu/src/backend/api/CreateMessages.php', {
+               reciever_id: purchaseData.user_id,
+               message,
+               sender_id: userData.user_id // Replace with actual staff ID
+            });
+
             setPurchaseData({
                purchase_id: '',
                reservation_id: '',
@@ -189,6 +208,8 @@ const StaffReservations = () => {
                total_price: '',
                sold_by: ''
             });
+
+            fetchAllReservations(); // Refresh reservations to update the list
          } else {
             alert(response.data.message || 'Failed to create purchase history.');
          }
@@ -216,7 +237,7 @@ const StaffReservations = () => {
       }
    }, [purchaseData.reservation_id, reservations, items, userData.user_id]);
 
-   const filteredReservations = reservations.filter(reservation => reservation.status == 'Reserved');
+   const filteredReservations = reservations.filter(reservation => reservation.status === 'Reserved');
    const currentReservations = filteredReservations.slice((currentReservationPage - 1) * reservationsPerPage, currentReservationPage * reservationsPerPage);
 
    return (
@@ -227,9 +248,9 @@ const StaffReservations = () => {
                <div className="col-md-3">
                   <StaffSidebar />
                </div>
-               <div className="col-md-9">
+               <div className="col-md-9" style={{marginTop:'100px', marginLeft:'350px'}}>
                   <div className="container mt-5" style={{ width: '2500px'}}>
-                     <h2 className="mt-5 mb-4">Staff Reservations</h2>
+                     
 
                      {filteredReservations.length === 0 ? (
                         <p>No reservations found.</p>

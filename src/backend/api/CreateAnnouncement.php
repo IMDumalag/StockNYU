@@ -28,13 +28,13 @@ if ($requestMethod == "POST") {
    }
 
    $announcement_text = $inputData['announcement_text'] ?? null;
-   $announcement_imf = $inputData['announcement_imf'] ?? null;
+   $announcement_img = $inputData['announcement_img'] ?? null;
    $created_by = $inputData['created_by'] ?? null;
 
    if (!$announcement_text) {
       error422('Announcement text is required');
    }
-   if (!$announcement_imf) {
+   if (!$announcement_img) {
       error422('Announcement IMF is required');
    }
    if (!$created_by) {
@@ -43,7 +43,7 @@ if ($requestMethod == "POST") {
 
    $created_date = date('Y-m-d H:i:s');
 
-   insertAnnouncement($announcement_text, $announcement_imf, $created_by, $created_date);
+   insertAnnouncement($announcement_text, $announcement_img, $created_by, $created_date);
 } else {
    $data = [
       'status' => 405,

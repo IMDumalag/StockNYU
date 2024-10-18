@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Container, TextField, Typography, Accordion, AccordionSummary, AccordionDetails, Box,
-  Pagination, Paper, Grid, IconButton
+  Container, Typography, Accordion, AccordionSummary, AccordionDetails, Box,
+  Paper, Grid, IconButton
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UserSidebar from '../components/UserSidebar';
@@ -56,17 +56,14 @@ const UserFAQs = () => {
           <div className="col-md-9 content-column">
             <Container style={{marginTop:'100px'}}>
               <Box className="faq-header">
-                <Typography variant="h3" color="primary" className="faq-title">Frequently Asked Questions</Typography>
+                
                 <Box className="faq-search-bar">
-                  <TextField 
-                    variant="outlined"
-                    placeholder="How do we help?"
-                    fullWidth
+                  <input
+                    type="text"
+                    className="form-control mb-4"
+                    placeholder="How can we help?"
                     value={searchTerm}
                     onChange={handleSearch}
-                    InputProps={{
-                      className: 'faq-search-bar-input'
-                    }}
                   />
                 </Box>
               </Box>
@@ -93,15 +90,63 @@ const UserFAQs = () => {
               </Box>
 
               {/* Pagination */}
-              <Box display="flex" justifyContent="center" mt={4}>
-                <Pagination
-                  count={Math.ceil(filteredFaqs.length / rowsPerPage)}
-                  page={currentPage}
-                  onChange={(event, value) => paginateFaqs(value)}
-                  color="primary"
-                  style={{width: '1000px'}}
-                />
-              </Box>
+              <nav className="d-flex justify-content-center mt-4">
+                <ul className="pagination">
+                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <button
+                      onClick={() => paginateFaqs(1)}
+                      className="page-link"
+                      disabled={currentPage === 1}
+                    >
+                      First
+                    </button>
+                  </li>
+                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <button
+                      onClick={() => paginateFaqs(currentPage - 1)}
+                      className="page-link"
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </button>
+                  </li>
+
+                  {Array.from({ length: Math.ceil(filteredFaqs.length / rowsPerPage) }, (_, index) => (
+                    <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                      <button
+                        onClick={() => paginateFaqs(index + 1)}
+                        className="page-link"
+                        disabled={currentPage === index + 1}
+                      >
+                        {index + 1}
+                      </button>
+                    </li>
+                  ))}
+
+                  <li
+                    className={`page-item ${currentPage === Math.ceil(filteredFaqs.length / rowsPerPage) ? "disabled" : ""}`}
+                  >
+                    <button
+                      onClick={() => paginateFaqs(currentPage + 1)}
+                      className="page-link"
+                      disabled={currentPage === Math.ceil(filteredFaqs.length / rowsPerPage)}
+                    >
+                      Next
+                    </button>
+                  </li>
+                  <li
+                    className={`page-item ${currentPage === Math.ceil(filteredFaqs.length / rowsPerPage) ? "disabled" : ""}`}
+                  >
+                    <button
+                      onClick={() => paginateFaqs(Math.ceil(filteredFaqs.length / rowsPerPage))}
+                      className="page-link"
+                      disabled={currentPage === Math.ceil(filteredFaqs.length / rowsPerPage)}
+                    >
+                      Last
+                    </button>
+                  </li>
+                </ul>
+              </nav>
             </Container>
           </div>
         </div>

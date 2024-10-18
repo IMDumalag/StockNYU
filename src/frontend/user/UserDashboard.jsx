@@ -27,14 +27,14 @@ const UserDashboard = () => {
     return (
         <>
             <Toolbar />
-            <div className="dashboard-container">
+            <div className="dashboard-container" >
                 <Sidebar />
-                <div className="content-wrapper">
+                <div className="content-wrapper" style={{marginTop:'0px'}}>
                     <div className="background-image"></div>
                     <div className="line-box"></div>
                     <h1 className="text-center welcome-text">
 
-                        Welcome <strong className="highlighted-text">{userData.fname}</strong> <strong className="highlighted-text">{userData.lname} !</strong>
+                        Welcome <strong className="highlighted-text" >{userData.fname}</strong> <strong className="highlighted-text">{userData.lname} !</strong>
                     </h1>
                     <div class="chat-bubble">
                         <p class="description-text">
@@ -45,17 +45,20 @@ const UserDashboard = () => {
                     <br></br>
                     <br />
                     <div className="dashboard-cards">
-                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_viewstockinventory')}>
+                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_viewstockinventory')} 
+                        style={{width:'400px'}}>
                             <img src="/src/assets/inventory icon.png" alt="Inventory Icon" className="card-image" />
                             <h5 className="card-title">Stock Inventory</h5>
                             <p className="card-text">Browse available stock of products.</p>
                         </div>
-                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_reservation')}>
+                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_reservation')}
+                            style={{width:'400px'}}>
                             <img src="/src/assets/reservation icon.png" alt="Reservation Icon" className="card-image" />
                             <h5 className="card-title">Stock Reservations</h5>
                             <p className="card-text">View and manage your item reservations.</p>
                         </div>
-                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_faqs')}>
+                        <div className="dashboard-card" onClick={() => handleNavigation('/login/user_faqs')}
+                            style={{width:'400px'}}>
                             <img src="/src/assets/faq icon.png" alt="FAQ Icon" className="card-image" />
                             <h5 className="card-title">FAQ</h5>
                             <p className="card-text">Frequently asked questions and guides.</p>
