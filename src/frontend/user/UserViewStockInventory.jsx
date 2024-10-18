@@ -253,215 +253,214 @@ const UserViewStockInventory = () => {
   return (
     <>
       <Toolbar />
+      <div style={{width:'4000px', background: 'radial-gradient(circle, #7b7865, #444f66, #000f29)', backgroundSize: '200% 200%', minHeight: '100vh', paddingTop: '20px', animation: 'bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite'}}>
       <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
-      <div className="container-fluid" style={{marginTop:'60px'}}>
-        <div className="row">
-          <div className="col-md-3">
-            <Sidebar />
-          </div>
-          <div className="col-md-9" style={{marginLeft:"300px"}}>
-            <div className="container mt-5 text-center" style={{width:'4000px'}}>
-              
+        <div className="container-fluid" style={{marginTop:'60px'}}>
+          <div className="row">
+            <div className="col-md-3">
+              <Sidebar />
+            </div>
+            <div className="col-md-9" style={{marginLeft:"-1400px"}}>
+              <div className="container mt-5 text-center" >
+                <input
+                  type="text"
+                  className="form-control mb-4"
+                  placeholder="Search items..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
 
-              <input
-                type="text"
-                className="form-control mb-4"
-                placeholder="Search items..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-
-              <table className="table table-bordered mt-5">
-                <thead className="thead-dark">
-                  <tr>
-                    <th>Notify on Restock</th>
-                    <th>Item Name</th>
-                    <th>Image</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((item) => (
-                    <tr key={item.item_id}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={!!notificationPreferences[item.item_id]}
-                          onChange={() => handleCheckboxChange(item.item_id)}
-                        />
-                      </td>
-                      <td>{item.item_name}</td>
-                      <td>
-                        <img
-                          src={item.item_image}
-                          alt={item.item_name}
-                          style={{ width: "100px", height: "100px", cursor: "pointer", display: "block", margin: "0 auto" }}
-                          onClick={() => handleImageClick(item.item_image)}
-                        />
-                      </td>
-                      <td>{item.description}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.price}</td>
-                      <td>{item.status}</td>
-                      <td>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleReserveClick(item)}
-                        >
-                          Reserve
-                        </button>
-                      </td>
+                <table className="table table-bordered mt-5">
+                  <thead className="thead-dark">
+                    <tr>
+                      <th>Notify on Restock</th>
+                      <th>Item Name</th>
+                      <th>Image</th>
+                      <th>Description</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {currentItems.map((item) => (
+                      <tr key={item.item_id}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={!!notificationPreferences[item.item_id]}
+                            onChange={() => handleCheckboxChange(item.item_id)}
+                          />
+                        </td>
+                        <td>{item.item_name}</td>
+                        <td>
+                          <img
+                            src={item.item_image}
+                            alt={item.item_name}
+                            style={{ width: "100px", height: "100px", cursor: "pointer", display: "block", margin: "0 auto" }}
+                            onClick={() => handleImageClick(item.item_image)}
+                          />
+                        </td>
+                        <td>{item.description}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.price}</td>
+                        <td>{item.status}</td>
+                        <td>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleReserveClick(item)}
+                          >
+                            Reserve
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-              <nav className="d-flex justify-content-center mt-4">
-                <ul className="pagination">
-                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                    <button
-                      onClick={() => paginate(1)}
-                      className="page-link"
-                      disabled={currentPage === 1}
-                    >
-                      First
-                    </button>
-                  </li>
-                  <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                    <button
-                      onClick={() => paginate(currentPage - 1)}
-                      className="page-link"
-                      disabled={currentPage === 1}
-                    >
-                      Previous
-                    </button>
-                  </li>
-
-                  {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, index) => (
-                    <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                <nav className="d-flex justify-content-center mt-4">
+                  <ul className="pagination">
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                       <button
-                        onClick={() => paginate(index + 1)}
+                        onClick={() => paginate(1)}
                         className="page-link"
-                        disabled={currentPage === index + 1}
+                        disabled={currentPage === 1}
                       >
-                        {index + 1}
+                        First
                       </button>
                     </li>
-                  ))}
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <button
+                        onClick={() => paginate(currentPage - 1)}
+                        className="page-link"
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                    </li>
 
-                  <li
-                    className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
-                  >
-                    <button
-                      onClick={() => paginate(currentPage + 1)}
-                      className="page-link"
-                      disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                    {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, index) => (
+                      <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                        <button
+                          onClick={() => paginate(index + 1)}
+                          className="page-link"
+                          disabled={currentPage === index + 1}
+                        >
+                          {index + 1}
+                        </button>
+                      </li>
+                    ))}
+
+                    <li
+                      className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
                     >
-                      Next
-                    </button>
-                  </li>
-                  <li
-                    className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
-                  >
-                    <button
-                      onClick={() => paginate(Math.ceil(filteredItems.length / itemsPerPage))}
-                      className="page-link"
-                      disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                      <button
+                        onClick={() => paginate(currentPage + 1)}
+                        className="page-link"
+                        disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                      >
+                        Next
+                      </button>
+                    </li>
+                    <li
+                      className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? "disabled" : ""}`}
                     >
-                      Last
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+                      <button
+                        onClick={() => paginate(Math.ceil(filteredItems.length / itemsPerPage))}
+                        className="page-link"
+                        disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                      >
+                        Last
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
 
-              <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Image Preview</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <img src={selectedImage} alt="Selected" className="img-fluid" style={{ display: "block", margin: "0 auto" }} />
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={handleCloseModal}>
-                    Close
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+                <Modal show={showModal} onHide={handleCloseModal}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Image Preview</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <img src={selectedImage} alt="Selected" className="img-fluid" style={{ display: "block", margin: "0 auto" }} />
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
 
-              {/* Reservation Modal */}
-              <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Reserve Item</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  {selectedItem && (
-                    <div>
-                      <p><strong>Item Name:</strong> {selectedItem.item_name}</p>
-                      <p><strong>Description:</strong> {selectedItem.description}</p>
-                      <img
-                        src={selectedItem.item_image}
-                        alt={selectedItem.item_name}
-                        style={{ width: "100%", height: "auto", display: "block", margin: "0 auto" }}
-                      />
-                      <div className="form-group mt-3">
-                        <label htmlFor="reservation_date_start">Start Date</label>
-                        <input
-                          type="date"
-                          id="reservation_date_start"
-                          name="reservation_date_start"
-                          className="form-control"
-                          onChange={handleInputChange}
-                          value={reservationDetails.reservation_date_start}
-                          readOnly
+                {/* Reservation Modal */}
+                <Modal show={showModal} onHide={() => setShowModal(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Reserve Item</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {selectedItem && (
+                      <div>
+                        <p><strong>Item Name:</strong> {selectedItem.item_name}</p>
+                        <p><strong>Description:</strong> {selectedItem.description}</p>
+                        <img
+                          src={selectedItem.item_image}
+                          alt={selectedItem.item_name}
+                          style={{ width: "100%", height: "auto", display: "block", margin: "0 auto" }}
                         />
+                        <div className="form-group mt-3">
+                          <label htmlFor="reservation_date_start">Start Date</label>
+                          <input
+                            type="date"
+                            id="reservation_date_start"
+                            name="reservation_date_start"
+                            className="form-control"
+                            onChange={handleInputChange}
+                            value={reservationDetails.reservation_date_start}
+                            readOnly
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="reservation_date_end">End Date</label>
+                          <input
+                            type="date"
+                            id="reservation_date_end"
+                            name="reservation_date_end"
+                            className="form-control"
+                            onChange={handleInputChange}
+                            value={reservationDetails.reservation_date_end}
+                            readOnly
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="quantity_reserved">Quantity</label>
+                          <input
+                            type="number"
+                            id="quantity_reserved"
+                            name="quantity_reserved"
+                            className="form-control"
+                            min="1"
+                            max={selectedItem.quantity}
+                            value={reservationDetails.quantity_reserved}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <p><strong>Note:</strong> Your reservation will expire on {reservationDetails.reservation_date_end}.</p>
                       </div>
-                      <div className="form-group">
-                        <label htmlFor="reservation_date_end">End Date</label>
-                        <input
-                          type="date"
-                          id="reservation_date_end"
-                          name="reservation_date_end"
-                          className="form-control"
-                          onChange={handleInputChange}
-                          value={reservationDetails.reservation_date_end}
-                          readOnly
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="quantity_reserved">Quantity</label>
-                        <input
-                          type="number"
-                          id="quantity_reserved"
-                          name="quantity_reserved"
-                          className="form-control"
-                          min="1"
-                          max={selectedItem.quantity}
-                          value={reservationDetails.quantity_reserved}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <p><strong>Note:</strong> Your reservation will expire on {reservationDetails.reservation_date_end}.</p>
-                    </div>
-                  )}
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={() => setShowModal(false)}>
-                    Close
-                  </Button>
-                  <Button variant="primary" onClick={handleReserve}>
-                    Reserve
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleReserve}>
+                      Reserve
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
             </div>
           </div>
-          
         </div>
-        </div>
+      </div>
       </div>
     </>
   );
