@@ -1,154 +1,153 @@
-      .dashboard-container {   
-         display: flex;   
-         height: 100vh;   
-         background: radial-gradient(circle, #7b7865, #444f66, #000f29); /* Abstract gradient with gray, midtone, and blue */
-         background-size: 200% 200%;  /* Larger size for smoother, abstract transitions */
-         min-height: 100vh;   
-         padding-top: 20px; 
-         animation: bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;  /* Slower, bouncy motion */
+   .dashboard-container {   
+      display: flex;   
+      height: 100vh;   
+      background: radial-gradient(circle, #7b7865, #444f66, #000f29); /* Abstract gradient with gray, midtone, and blue */
+      background-size: 200% 200%;  /* Larger size for smoother, abstract transitions */
+      min-height: 100vh;   
+      padding-top: 20px; 
+      animation: bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;  /* Slower, bouncy motion */
+   }
+   
+   @keyframes bouncyMovement {
+      0% {
+         background-position: 0% 0%;
       }
-
-      @keyframes bouncyMovement {
-         0% {
-            background-position: 0% 0%;
-         }
-         25% {
-            background-position: 50% 100%;
-         }
-         50% {
-            background-position: 100% 50%;
-         }
-         75% {
-            background-position: 50% 0%;
-         }
-         100% {
-            background-position: 0% 100%;
-         }
+      25% {
+         background-position: 50% 100%;
       }
-
-
-      .content-wrapper {   
-         flex-grow: 1;   
-         padding: 30px;   
-         display: flex;   
-         flex-direction: column;   
-         align-items: center;   
-         justify-content: center; 
+      50% {
+         background-position: 100% 50%;
       }
-
-      .welcome-text {   
-         color: #FFFFFF;   
-         margin-bottom: 30px;   
-         font-weight: 200; 
+      75% {
+         background-position: 50% 0%;
       }
-
-      .highlighted-text {   
-         font-weight: 750; /* More bold */   
-         color: #F8D34E;   
-         text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+      100% {
+         background-position: 0% 100%;
       }
-
-      .dashboard-cards {   
-         display: flex;   
-         justify-content: space-around;   
-         width: 100%;   
-         max-width: 1200px;
-         margin-right: 5px !important; 
-         margin-left: 20px !important;
-      }
-
-      .dashboard-card {   
-         width: 344px;   
-         height: 369px;   
-         border-radius: 5px;   
-         background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
-         box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
-         display: flex;   
-         flex-direction: column;   
-         align-items: center;   
-         justify-content: center;   
-         cursor: pointer;   
-         transition: transform 0.2s ease-in-out;   
-         text-align: center;   
-         padding: 20px; 
-      }
-
-      .dashboard-card:hover {   
-         transform: translateY(-5px); 
-      }
-
-      .card {   
-         width: 400px;  /* Increase the width */   
-         height: 450px; /* Increase the height */   
-         flex-shrink: 0;   
-         border-radius: 5px;   
-         background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
-         box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
-         display: flex;   
-         flex-direction: column;   
-         justify-content: center;   
-         align-items: center;   
-         cursor: pointer;   
-         transition: transform 0.2s ease-in-out; 
-      }
-
-      .card:hover {   
-         transform: scale(1.05);  /* Add hover effect to scale up the card slightly */ 
-      }
-
-      .card img {   
-         width: 150px;  /* Increase icon size */   
-         height: 150px;   
-         margin-bottom: 20px; 
-      }
-
-      .card h5 {   
-         font-size: 1.6rem; /* Increase title size */   
-         font-weight: bold; 
-      }
-
-      .card p {   
-         font-size: 1.2rem; 
-      }
-
-      .card-title {   
-         font-size: 1.28rem;   
-         font-weight: bold;   
-         margin-bottom: 10px; 
-      }
-
-      .card-text {   
-         font-size: 1rem;   
-         color: #a8a8a8; 
-      }
-
-      .card-container {   
-         display: flex;   
-         gap: 20px; /* Add spacing between cards */   
-         justify-content: center;   
-         flex-wrap: wrap; 
-      }
-
-      .chat-bubble {
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         padding: 20px;
-
-     }
-     
-     .description-text {
-         font-size: 1.2rem;
-         color: #ffffff;
-         background-color: #b8b8b811;
-         margin: 0;
-         font-weight: 300;
-         text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-         line-height: 1.5;
-         text-align: center;
-         padding: 15px 20px;
-         border-radius: 15px;
-         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-         border: 1px solid rgba(255, 255, 255, 0.2);
-     }
+   }
+   
+   
+   .content-wrapper {   
+      flex-grow: 1;   
+      padding: 30px;   
+      display: flex;   
+      flex-direction: column;   
+      align-items: center;   
+      justify-content: center; 
+   }
+   
+   .welcome-text {   
+      color: #FFFFFF;   
+      margin-bottom: 30px;   
+      font-weight: 200; 
+   }
+   
+   .highlighted-text {   
+      font-weight: 750; /* More bold */   
+      color: #F8D34E;   
+      text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+   }
+   
+   .dashboard-cards {   
+      display: flex;   
+      justify-content: space-around;   
+      width: 100%;   
+      max-width: 1800px;
+      margin-right: 5px !important; 
+      margin-left: 20px !important;
+   }
+   
+   .dashboard-card {   
+      width: 200px;   
+      height: 200px;   
+      border-radius: 5px;   
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
+      box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
+      display: flex;   
+      flex-direction: column;   
+      align-items: center;   
+      justify-content: center;   
+      cursor: pointer;   
+      transition: transform 0.2s ease-in-out;   
+      text-align: center;   
+      padding: 20px; 
+   }
+   
+   .dashboard-card:hover {   
+      transform: translateY(-5px); 
+   }
+   
+   .card {   
+      width: 200px;  /* Increase the width */   
+      height: 350px; /* Increase the height */   
+      flex-shrink: 0;   
+      border-radius: 5px;   
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(153, 153, 153, 0.04) 100%);   
+      box-shadow: 0px 6px 4px 0px rgba(0, 0, 0, 0.25);   
+      display: flex;   
+      flex-direction: column;   
+      justify-content: center;   
+      align-items: center;   
+      cursor: pointer;   
+      transition: transform 0.2s ease-in-out; 
+   }
+   
+   .card:hover {   
+      transform: scale(1.05);  /* Add hover effect to scale up the card slightly */ 
+   }
+   
+   .card img {   
+      width: 150px;  /* Increase icon size */   
+      height: 150px;   
+      margin-bottom: 20px; 
+   }
+   
+   .card h5 {   
+      font-size: 1.6rem; /* Increase title size */   
+      font-weight: bold; 
+   }
+   
+   .card p {   
+      font-size: 1.2rem; 
+   }
+   
+   .card-title {   
+      font-size: 1.28rem;   
+      font-weight: bold;   
+      margin-bottom: 10px; 
+   }
+   
+   .card-text {   
+      font-size: 1rem;   
+      color: #a8a8a8; 
+   }
+   
+   .card-container {   
+      display: flex;   
+      gap: 20px; /* Add spacing between cards */   
+      justify-content: center;   
+      flex-wrap: wrap; 
+   }
+   
+   .chat-bubble {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+   }
+   
+   .description-text {
+      font-size: 1.2rem;
+      color: #ffffff;
+      background-color: #b8b8b811;
+      margin: 0;
+      font-weight: 300;
+      text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      line-height: 1.5;
+      text-align: center;
+      padding: 15px 20px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+   }
      

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
-import globalVariable from '/src/backend/data/GlobalVariable';  // Import global variable
+import globalVariable from '/src/backend/data/GlobalVariable';
 
 const StaffFaqs = () => {
    const [question, setQuestion] = useState('');
@@ -15,7 +15,7 @@ const StaffFaqs = () => {
       const faqData = {
          question,
          answer,
-         created_by: globalVariable.getUserData().user_id,  // Fetching user_id from GlobalVariable
+         created_by: globalVariable.getUserData().user_id,
       };
 
       try {
@@ -44,14 +44,14 @@ const StaffFaqs = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid" style={{ paddingTop: '100px'}}>
+         <div className="container-fluid" style={{ paddingTop: '100px' , marginLeft:'-100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
                </div>
                <div className="col-md-9">
                   <div className="container mt-4">
-                     <h1>Add FAQ</h1>
+                     <h1 className="text-center">Add FAQ</h1>
                      {message && <div className="alert alert-info">{message}</div>}
                      <form onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -75,7 +75,7 @@ const StaffFaqs = () => {
                               required
                            ></textarea>
                         </div>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn btn-primary btn-block">
                            Add FAQ
                         </button>
                      </form>

@@ -30,7 +30,7 @@ export default function LoginGoogle() {
    const handleLoginSuccess = async (response) => {
       const { credential } = response;
       try {
-         const res = await axios.post("http://localhost/stock-nyu/src//backend/google/google.php", { token: credential });
+         const res = await axios.post("http://localhost/stock-nyu/src/backend/google/google.php", { token: credential });
          const { user, isNewUser } = res.data;
 
          if (res.status === 201) {

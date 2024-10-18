@@ -32,16 +32,16 @@ function getNextAnnouncementId()
 }
 
 // Function to insert a new announcement
-function insertAnnouncement($annoucement_text, $annoucement_imf, $created_by, $created_date)
+function insertAnnouncement($annoucement_text, $annoucement_img, $created_by, $created_date)
 {
    global $conn;
 
    // Get the next announcement_id
    $announcement_id = getNextAnnouncementId();
 
-   $query = "INSERT INTO tbl_announcement (announcement_id, annoucement_text, annoucement_imf, created_by, created_date) VALUES (?, ?, ?, ?, ?)";
+   $query = "INSERT INTO tbl_announcement (announcement_id, annoucement_text, annoucement_img, created_by, created_date) VALUES (?, ?, ?, ?, ?)";
    $stmt = $conn->prepare($query);
-   $stmt->bind_param("issss", $announcement_id, $annoucement_text, $annoucement_imf, $created_by, $created_date);
+   $stmt->bind_param("issss", $announcement_id, $annoucement_text, $annoucement_img, $created_by, $created_date);
 
    if ($stmt->execute()) {
       $data = [
