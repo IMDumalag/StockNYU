@@ -365,14 +365,14 @@ const handleDelete = async (id) => {
       <>
       <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
          <StaffToolbar />
-         <div className="container-fluid" style={{ paddingTop: '100px'}}>
+         <div className="container-fluid" style={{ paddingTop: '60px', marginLeft:'-100px'}}>
             <div className="row">
                <div className="col-md-3">
                   <StaffSidebar />
                </div>
                <div className="col-md-9">
                   <div className="container mt-5">
-                     <h2 className="mb-4">Inventory Management</h2>
+                     
 
                      <input
                         type="text"

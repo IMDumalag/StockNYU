@@ -254,14 +254,14 @@ const UserViewStockInventory = () => {
     <>
       <Toolbar />
       <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
-      <div className="container-fluid">
+      <div className="container-fluid" style={{marginTop:'60px'}}>
         <div className="row">
           <div className="col-md-3">
             <Sidebar />
           </div>
           <div className="col-md-9" style={{marginLeft:"300px"}}>
-            <div className="container mt-5 text-center">
-              <h2 className="mb-4">Available Stocks</h2>
+            <div className="container mt-5 text-center" style={{width:'4000px'}}>
+              
 
               <input
                 type="text"

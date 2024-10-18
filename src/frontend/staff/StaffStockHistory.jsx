@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Container, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Grid, Pagination } from '@mui/material';
 import StaffSidebar from '../components/StaffSidebar';
 import StaffToolbar from '../components/StaffToolbar';
 
@@ -46,123 +46,79 @@ const StaffStockHistory = () => {
    return (
       <>
          <StaffToolbar />
-         <div className="container-fluid" style={{ paddingTop: '100px'}}>
-            <div className="row">
-               <div className="col-md-3">
+         <Container maxWidth="x2" sx={{ pt: 4 }} style={{paddingTop:'140px', marginLeft:'-100px'}}>
+            <Grid container spacing={3}>
+               <Grid item xs={12} sm={3}>
                   <StaffSidebar />
-               </div>
-               <div className="col-md-9" style={{ marginLeft: '-150px'}}>
-                  <Container>
-                     <Typography variant="h4" className="my-4">Stock Change History</Typography>
+               </Grid>
+               <Grid item xs={12} sm={9}>
+                  <Paper elevation={3} sx={{ p: 3, backgroundColor: '#f5f5f5' }}>
+                     <Typography variant="h4" gutterBottom sx={{ mb: 2, fontWeight: 'bold' }}>
+                        Stock Change History
+                     </Typography>
 
-                     <TextField
-                        variant="outlined"
-                        label="Search by Item ID or Name"
-                        fullWidth
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        className="mb-4"
-                     />
+                     <Box sx={{ mb: 3 }}>
+                        <TextField
+                           variant="outlined"
+                           label="Search by Item ID or Name"
+                           fullWidth
+                           value={searchTerm}
+                           onChange={handleSearch}
+                           InputProps={{
+                              style: { backgroundColor: '#fff', borderRadius: '8px' }
+                           }}
+                        />
+                     </Box>
 
-                     <TableContainer component={Paper}>
-                        <Table>
-                           <TableHead>
-                              <TableRow>
-                                 <TableCell>Change ID</TableCell>
-                                 <TableCell>Item ID</TableCell>
-                                 <TableCell>Item Name</TableCell>
-                                 <TableCell>User ID</TableCell>
-                                 <TableCell>User Name</TableCell>
-                                 <TableCell>Quantity Before</TableCell>
-                                 <TableCell>Quantity Added</TableCell>
-                                 <TableCell>Quantity Subtracted</TableCell>
-                                 <TableCell>Quantity Current</TableCell>
-                                 <TableCell>Note</TableCell>
-                                 <TableCell>Created At</TableCell>
-                              </TableRow>
-                           </TableHead>
-                           <TableBody>
-                              {currentStockChanges.map((stockChange) => (
-                                 <TableRow key={stockChange.change_id}>
-                                    <TableCell>{stockChange.change_id}</TableCell>
-                                    <TableCell>{stockChange.item_id}</TableCell>
-                                    <TableCell>{stockChange.item_name}</TableCell>
-                                    <TableCell>{stockChange.user_id}</TableCell>
-                                    <TableCell>{`${stockChange.f_name} ${stockChange.l_name}`}</TableCell>
-                                    <TableCell>{stockChange.quantity_before}</TableCell>
-                                    <TableCell>{stockChange.quantity_added}</TableCell>
-                                    <TableCell>{stockChange.quantity_subtracted}</TableCell>
-                                    <TableCell>{stockChange.quantity_current}</TableCell>
-                                    <TableCell>{stockChange.note}</TableCell>
-                                    <TableCell>{new Date(stockChange.created_at).toLocaleString()}</TableCell>
+                     {/* Table with Wider Layout */}
+                     <Box sx={{ overflowX: 'auto' }}>
+                        <TableContainer component={Paper}>
+                           <Table stickyHeader sx={{ minWidth: 1500 }}>
+                              <TableHead>
+                                 <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Item Name</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>User Name</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Quantity Before</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Quantity Added</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Quantity Subtracted</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Quantity Current</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Note</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Created At</TableCell>
                                  </TableRow>
-                              ))}
-                           </TableBody>
-                        </Table>
-                     </TableContainer>
+                              </TableHead>
+                              <TableBody>
+                                 {currentStockChanges.map((stockChange) => (
+                                    <TableRow key={stockChange.change_id}>
+                                       <TableCell>{stockChange.item_name}</TableCell>
+                                       <TableCell>{`${stockChange.f_name} ${stockChange.l_name}`}</TableCell>
+                                       <TableCell>{stockChange.quantity_before}</TableCell>
+                                       <TableCell>{stockChange.quantity_added}</TableCell>
+                                       <TableCell>{stockChange.quantity_subtracted}</TableCell>
+                                       <TableCell>{stockChange.quantity_current}</TableCell>
+                                       <TableCell>{stockChange.note}</TableCell>
+                                       <TableCell>{new Date(stockChange.created_at).toLocaleString()}</TableCell>
+                                    </TableRow>
+                                 ))}
+                              </TableBody>
+                           </Table>
+                        </TableContainer>
+                     </Box>
 
                      {/* Pagination */}
-                     <nav className="d-flex justify-content-center mt-4">
-                        <ul className="pagination">
-                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                              <button
-                                 onClick={() => paginateStockChanges(1)}
-                                 className="page-link"
-                                 disabled={currentPage === 1}
-                              >
-                                 First
-                              </button>
-                           </li>
-                           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                              <button
-                                 onClick={() => paginateStockChanges(currentPage - 1)}
-                                 className="page-link"
-                                 disabled={currentPage === 1}
-                              >
-                                 Previous
-                              </button>
-                           </li>
-
-                           {Array.from({ length: Math.ceil(filteredStockChanges.length / rowsPerPage) }, (_, index) => (
-                              <li key={index + 1} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
-                                 <button
-                                    onClick={() => paginateStockChanges(index + 1)}
-                                    className="page-link"
-                                    disabled={currentPage === index + 1}
-                                 >
-                                    {index + 1}
-                                 </button>
-                              </li>
-                           ))}
-
-                           <li
-                              className={`page-item ${currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage) ? "disabled" : ""}`}
-                           >
-                              <button
-                                 onClick={() => paginateStockChanges(currentPage + 1)}
-                                 className="page-link"
-                                 disabled={currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage)}
-                              >
-                                 Next
-                              </button>
-                           </li>
-                           <li
-                              className={`page-item ${currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage) ? "disabled" : ""}`}
-                           >
-                              <button
-                                 onClick={() => paginateStockChanges(Math.ceil(filteredStockChanges.length / rowsPerPage))}
-                                 className="page-link"
-                                 disabled={currentPage === Math.ceil(filteredStockChanges.length / rowsPerPage)}
-                              >
-                                 Last
-                              </button>
-                           </li>
-                        </ul>
-                     </nav>
-                  </Container>
-               </div>
-            </div>
-         </div>
+                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                        <Pagination
+                           count={Math.ceil(filteredStockChanges.length / rowsPerPage)}
+                           page={currentPage}
+                           onChange={(_, page) => paginateStockChanges(page)}
+                           variant="outlined"
+                           color="primary"
+                           shape="rounded"
+                        />
+                     </Box>
+                  </Paper>
+               </Grid>
+            </Grid>
+         </Container>
       </>
    );
 };
