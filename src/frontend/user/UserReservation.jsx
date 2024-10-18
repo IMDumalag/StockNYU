@@ -114,7 +114,6 @@ const UserReservation = () => {
 
    return (
       <>
-      
          <UserToolbar />
          <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
          <div className="container-fluid">
@@ -122,8 +121,8 @@ const UserReservation = () => {
                <div className="col-md-3">
                   <UserSidebar />
                </div>
-               <div className="col-md-9">
-                  <div className="container mt-5">
+               <div className="col-md-9" >
+                  <div className="container mt-5" style={{width:'4000px', marginLeft:"-100px"}}>
                      <h2 className="mt-5 mb-4">Your Reservations</h2>
 
                      {filteredReservations.length === 0 ? (

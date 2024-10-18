@@ -228,7 +228,7 @@ const StaffReservations = () => {
                   <StaffSidebar />
                </div>
                <div className="col-md-9">
-                  <div className="container mt-5">
+                  <div className="container mt-5" style={{ width: '2500px'}}>
                      <h2 className="mt-5 mb-4">Staff Reservations</h2>
 
                      {filteredReservations.length === 0 ? (

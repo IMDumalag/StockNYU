@@ -20,20 +20,23 @@ const StaffToolbar = () => {
 
   useEffect(() => {
     switch (location.pathname) {
-      case '/staff/dashboard':
+      case '/login/staff_dashboard':
         setDashboardText('DASHBOARD');
         break;
-      case '/staff/inventory':
-        setDashboardText('INVENTORY');
+      case '/login/staff_inventorymanagement':
+        setDashboardText('STOCK INVENTORY');
         break;
-      case '/staff/reservations':
-        setDashboardText('RESERVATIONS');
+      case '/login/staff_stockhistory':
+        setDashboardText('STOCK HISTORY');
         break;
-      case '/staff/faqs':
-        setDashboardText('FAQ');
+      case '/login/staff_reservations':
+        setDashboardText('STOCK RESERVATIONS');
         break;
-      case '/staff/notifications':
-        setDashboardText('NOTIFICATIONS');
+      case '/login/staff_faqsandannouncement':
+        setDashboardText('FAQs and Announcement');
+        break;
+      case '/login/staff_analytics':
+        setDashboardText('Analytics');
         break;
       default:
         setDashboardText('DASHBOARD');
@@ -69,11 +72,8 @@ const StaffToolbar = () => {
     setAnchorEl(null);
     navigate('/');
   };
- 
 
   return (
-    
-    <>
     <nav className="navbar navbar-expand-lg toolbar-gradient border-bottom">
       <img src="/src/assets/nu_bulldogs_logo-removebg-preview 3.png" alt="Logo" className="logo" />
 
@@ -83,14 +83,14 @@ const StaffToolbar = () => {
 
       <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
         <li className="nav-item user-profile">
-        <Avatar className="avatar">
+          <Avatar className="avatar">
             <img 
-                src={userData.profile_picture} 
-                alt="Profile Icon" 
-                className="profile-image" 
-                style={{ width: '100%', height: '100%' }} 
+              src={userData.profile_picture} 
+              alt="Profile Icon" 
+              className="profile-image" 
+              style={{ width: '100%', height: '100%' }} 
             />
-        </Avatar>
+          </Avatar>
 
           <span className="username">{userData.fname} {userData.lname}</span>
           <IconButton onClick={handleClick} color="inherit">
@@ -116,7 +116,6 @@ const StaffToolbar = () => {
 
       <img src="/src/assets/bulldog icon.png" alt="Bulldog Logo" className="bulldog-logo" />
     </nav>
-    </>
   );
 };
 
