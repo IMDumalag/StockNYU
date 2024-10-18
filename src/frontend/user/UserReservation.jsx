@@ -116,20 +116,20 @@ const UserReservation = () => {
       <>
          <UserToolbar />
          <div className="scroll-container" style={{ overflowY: 'scroll', maxHeight: '100vh' }}>
+         <div style={{width:'2000px', background: 'radial-gradient(circle, #7b7865, #444f66, #000f29)', backgroundSize: '200% 200%', minHeight: '100vh', paddingTop: '20px', animation: 'bouncyMovement 20s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite'}}>
          <div className="container-fluid">
             <div className="row">
                <div className="col-md-3">
                   <UserSidebar />
                </div>
-               <div className="col-md-9" >
+               <div className="col-md-9" style={{marginTop:'100px'}}>
                   <div className="container mt-5" style={{width:'4000px', marginLeft:"-100px"}}>
-                     <h2 className="mt-5 mb-4">Your Reservations</h2>
-
+                     <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '20px' }}>Your Reservation:</h2>
                      {filteredReservations.length === 0 ? (
-                        <p>No reservations found.</p>
+                        <p style={{ color: '#fff', textAlign: 'center' }}>No reservations found.</p>
                      ) : (
                         <>
-                           <table className="table table-bordered">
+                           <table className="table table-bordered" style={{ backgroundColor: '#fff' }}>
                               <thead className="thead-dark">
                                  <tr>
                                     <th>Reservation ID</th>
@@ -238,6 +238,7 @@ const UserReservation = () => {
                   </div>
                </div>
             </div>
+         </div>
          </div>
       </div>
       </>
