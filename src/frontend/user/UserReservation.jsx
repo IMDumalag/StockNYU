@@ -138,7 +138,7 @@ const UserReservation = () => {
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Quantity Reserved</th>
-                                    <th>Total Price</th>
+                                    <th>Total Price (₱)</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                  </tr>
@@ -158,7 +158,7 @@ const UserReservation = () => {
                                        <td>{reservation.reservation_date_start}</td>
                                        <td>{reservation.reservation_date_end}</td>
                                        <td>{reservation.quantity_reserved}</td>
-                                       <td>${reservation.total_price}</td>
+                                       <td>₱{reservation.total_price}</td>
                                        <td>{reservation.status}</td>
                                        <td>
                                           {reservation.status !== 'cancelled' && (

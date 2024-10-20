@@ -55,7 +55,7 @@ const StaffInventoryManagement = () => {
                   item_id: updatedItem.item_id,
                   user_id: userId,
                   quantity_before: selectedItem.quantity,
-                  quantity_added: quantityToAdd,
+                  quantity_added: parseInt(quantityToAdd),
                   quantity_subtracted: 0,
                   quantity_current: newQuantity,
                   note: "Quantity added",
